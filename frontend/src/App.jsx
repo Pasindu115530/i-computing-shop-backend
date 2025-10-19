@@ -3,7 +3,8 @@ import Home from "./pages/homepage";
 import Admin from "./pages/adminpage";
 import Register from "./pages/registerPage";
 import Login from "./pages/loginpage";
-import './index.css'
+import './App.css'
+
 
 
 function App() {
@@ -11,10 +12,10 @@ function App() {
     <BrowserRouter>
       <div className="w-screen h-screen bg-primary text-secondary    ">
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/*" element={<Home />} />
           <Route path="/login" element={<Login/>} />
           <Route path="/register" element={<Register/>} />
-          <Route path="/admin" element={<Admin/>}/>
+          <Route path="/admin/*" element={<Admin/>}/>
         </Routes>
       </div>
     </BrowserRouter>
