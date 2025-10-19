@@ -3,12 +3,13 @@ import Home from "./pages/homepage";
 import Admin from "./pages/adminpage";
 import Register from "./pages/registerPage";
 import Login from "./pages/loginpage";
+import './index.css'
 
 
 function App() {
   return (
     <BrowserRouter>
-      <div className="w-screen h-screen bg-red-500">
+      <div className="w-screen h-screen bg-primary text-secondary    ">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login/>} />
