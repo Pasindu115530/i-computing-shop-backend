@@ -1,8 +1,9 @@
-import { use, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
-export default function loginpage(){
+
+export default function LoginPage(){
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -14,13 +15,16 @@ export default function loginpage(){
   
 
         try{
-            const res = await axios.post("http://localhost:4900/users/api/login", {
+            const res = await axios.post(import.meta.env.VITE_BACKEND_URL+"/users/login", {
                 email: email,
                 password: password
             });
-            console.log("Login successful:", res.data);
+            console.log("Login response:", res.data);
+            alert(res.data.message);
+            
         } catch (error) {
-            console.error("Login failed:", error);  
+            console.error("Login failed:", error);
+            alert("Login failed");
         }
           }
 
@@ -31,7 +35,7 @@ export default function loginpage(){
                 <img 
                     src="/logo.png" 
                     alt="logo" 
-                    className="w-[200px] h-[200px] objective-cover"
+                    className="w-[200px] h-[200px] object-cover"
                 />
                 <h1 
                     className="text-[50px] text-golden text-shadow-2xs text-shadow-accent font-bold ">Plug In. Power Up. Play Hard

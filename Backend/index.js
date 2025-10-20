@@ -35,7 +35,7 @@ app.use(
             const token = authorizationHeader.replace("Bearer ", "")
 
 
-            jwt.verify(token, "secretKey96$2025",
+            jwt.verify(token, process.env.JWT_SECRET,
                 (error, content) => {
 
                     if (content == null) {
