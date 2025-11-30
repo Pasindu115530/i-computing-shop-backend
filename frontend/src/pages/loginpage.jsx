@@ -27,18 +27,28 @@ export default function LoginPage(){
 
             localStorage.setItem("token", res.data.token);
 
-            const token = localStorage.getItem("token");
-
-            if(res.data.role === "admin"){
-                navigate("/admin");
+            // Backend returns token but not the role directly.
+            // Decode the JWT payload to obtain the role when needed.
+            const token = res.data.token || localStorage.getItem("token");
+            let role = res.data.role;
+            if (!role && token) {
+                try {
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    role = payload.role;
+                } catch (e) {
+                    console.warn("Failed to decode token payload:", e);
+                }
             }
-            else{
+
+            if (role === "admin") {
+                navigate("/admin");
+            } else {
                 navigate("/");
             }
             
         } catch (error) {
             console.error("Login failed:", error);
-            toast.error(res.data.message);
+            toast.error(error?.response?.data?.message || "Login failed");
         }
           }
 

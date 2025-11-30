@@ -5,74 +5,89 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-export function createUser(req, res) {
-	const data = req.body;
+// =====================
+// CREATE USER
+// =====================
+export async function createUser(req, res) {
+    try {
+        const data = req.body;
 
-	const hashedPassword = bcrypt.hashSync(data.password, 10);
+        // check if email exists
+        const existingUser = await User.findOne({ email: data.email });
+        if (existingUser) {
+            return res.status(400).json({ message: "Email already exists" });
+        }
 
-	const user = new User({
-		email: data.email,
-		firstName: data.firstName,
-		lastName: data.lastName,
-		password: hashedPassword,
-		role: data.role,
-	});
+        const hashedPassword = bcrypt.hashSync(data.password, 10);
 
-	user.save().then(() => {
-		res.json({
-			message: "User created successfully",
-		});
-	});
+        const user = new User({
+            email: data.email,
+            firstName: data.firstName,
+            lastName: data.lastName,
+            password: hashedPassword,
+            role: data.role,
+        });
+
+        await user.save();
+
+        res.json({ message: "User created successfully" });
+
+    } catch (err) {
+        res.status(500).json({ message: "Server error", error: err.message });
+    }
 }
 
-export function loginUser(req, res) {
-	const email = req.body.email;
-	const password = req.body.password;
+// =====================
+// LOGIN USER
+// =====================
+export async function loginUser(req, res) {
+    try {
+        const { email, password } = req.body;
 
-	User.find({ email: email }).then((users) => {
-		if (users[0] == null) {
-			res.json({
-				message: "User not found",
-			});
-		} else {
-			const user = users[0];
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
 
-			const isPasswordCorrect = bcrypt.compareSync(password, user.password);
+        const isPasswordCorrect = bcrypt.compareSync(password, user.password);
+        if (!isPasswordCorrect) {
+            return res.status(401).json({ message: "Invalid password" });
+        }
 
-			if (isPasswordCorrect) {
-				const payload = {
-					email: user.email,
-					firstName: user.firstName,
-					lastName: user.lastName,
-					role: user.role,
-					isEmailVerified: user.isEmailVerified,
-					image: user.image,
-				};
+        const payload = {
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            role: user.role,
+            isEmailVerified: user.isEmailVerified,
+            image: user.image,
+        };
 
-				const token = jwt.sign(payload, process.env.JWT_SECRET, {
-					expiresIn: "150h",
-				});
+        const token = jwt.sign(payload, process.env.JWT_SECRET, {
+            expiresIn: "150h",
+        });
 
-				res.json({
-					message: "Login successful",
-					token: token,
-				});
-			} else {
-				res.status(401).json({
-					message: "Invalid password",
-				});
-			}
-		}
-	});
+        res.json({
+            message: "Login successful",
+            token,
+        });
+
+    } catch (err) {
+        res.status(500).json({ message: "Server error", error: err.message });
+    }
 }
 
-export function isAdmin(req) {
-	if (req.user == null) {
-		return false;
-	}
-	if (req.user.role != "admin") {
-		return false;
-	}
+// =====================
+// ADMIN CHECK (MIDDLEWARE)
+// =====================
+export function isAdmin(req, res, next) {
+    if (!req.user) {
+        return res.status(401).json({ message: "Access denied" });
+    }
 
-	return true;
+    if (req.user.role !== "admin") {
+        return res.status(403).json({ message: "Admin access only" });
+    }
+
+    next();
 }

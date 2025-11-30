@@ -1,8 +1,7 @@
 import Product from "../models/Product.js";
-import { isAdmin } from "./userController.js";
 
 export function createProduct(req, res) {
-    if (!isAdmin(req)) {
+    if (!req.user || req.user.role !== "admin") {
         res.status(403).json({
             message: "Forbidden",
         });
@@ -47,7 +46,7 @@ export function createProduct(req, res) {
 }
 
 export function getAllProducts(req, res) {
-    if (isAdmin(req)) {
+    if (req.user && req.user.role === "admin") {
         Product.find()
             .then((products) => {
                 res.json(products);
@@ -73,7 +72,7 @@ export function getAllProducts(req, res) {
 }
 
 export function deleteProduct(req, res) {
-    if (!isAdmin(req)) {
+    if (!req.user || req.user.role !== "admin") {
         res.status(403).json({
             message: "Only admin can delete products"
         });
@@ -103,7 +102,7 @@ export function deleteProduct(req, res) {
 }
 
 export function updateProduct(req, res) {
-    if (!isAdmin(req)) {
+    if (!req.user || req.user.role !== "admin") {
         res.status(403).json({
             message: "Only admin can update products"
         });
