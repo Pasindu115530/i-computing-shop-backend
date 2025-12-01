@@ -1,22 +1,22 @@
-import express from "express"
-import { createProduct, deleteProduct, getAllProducts, getProductByID, updateProduct } from "../controllers/productController.js"
+import express from "express";
+import { createProduct, deleteProduct, getAllProducts, getProductByID, updateProduct } from "../controllers/productController.js";
+import { requireAdmin } from "../middleware/auth.js";
 
-const productRouter = express.Router()
+const productRouter = express.Router();
 
-productRouter.get("/", getAllProducts)
+productRouter.get("/", getAllProducts);
 
-productRouter.get("/trending", (req,res)=>{
-    res.json(
-        {message : "trending products endpoint"}
-    )
-})
+productRouter.get("/trending", (req, res) => {
+    res.json({ message: "trending products endpoint" });
+});
 
-productRouter.post("/", createProduct)
+// Protect create/update/delete routes for admins only
+productRouter.post("/", requireAdmin, createProduct);
 
-productRouter.get("/:productID", getProductByID)
+productRouter.get("/:productID", getProductByID);
 
-productRouter.delete("/:productID", deleteProduct)
+productRouter.delete("/:productID", requireAdmin, deleteProduct);
 
-productRouter.put("/:productID", updateProduct)  
+productRouter.put("/:productID", requireAdmin, updateProduct);
 
-export default productRouter
+export default productRouter;

@@ -2,34 +2,40 @@ import { Link } from "react-router-dom";
 import {BiPlus} from "react-icons/bi";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import toast from "react-hot-toast";
 export default function adminProductPage() {
     const [products, setProducts] = useState([]);
+    const [loaded, setLoaded] = useState(false);
     useEffect(() => {
+        if(!loaded) {
         axios.get(import.meta.env.VITE_BACKEND_URL + "/products/")
             .then((response) => {
                 setProducts(response.data);
+                setLoaded(true);
             })
             .catch((error) => {
                 console.error("Error fetching products:", error);
             });
-    }, []);
+        } 
+    }, [loaded]);
 
     return (
-        <div className="w-full p-8">
-            <div className="bg-white shadow-lg rounded-lg overflow-auto">
+        <div className="w-full p-8 flex justify-center">
+            <div className="bg-white shadow-lg rounded-lg overflow-auto mx-auto max-w-6xl">
                 <table className="min-w-full table-auto">
                     <thead className="bg-accent text-white">
                         <tr>
-                            <th className="px-4 py-3 text-left">Image</th>
-                            <th className="px-4 py-3 text-left">ProductID</th>
-                            <th className="px-4 py-3 text-left">ProductName</th>
-                            <th className="px-4 py-3 text-right">Price</th>
-                            <th className="px-4 py-3 text-right">Labelled Price</th>
-                            <th className="px-4 py-3 text-left">Category</th>
-                            <th className="px-4 py-3 text-left">Brand</th>
-                            <th className="px-4 py-3 text-left">Model</th>
-                            <th className="px-4 py-3 text-right">Stock</th>
-                            <th className="px-4 py-3 text-left">Availability</th>
+                            <th className="px-4 py-3 text-center">Image</th>
+                            <th className="px-4 py-3 text-center">ProductID</th>
+                            <th className="px-4 py-3 text-center">ProductName</th>
+                            <th className="px-4 py-3 text-center">Price</th>
+                            <th className="px-4 py-3 text-center">Labelled Price</th>
+                            <th className="px-4 py-3 text-center">Category</th>
+                            <th className="px-4 py-3 text-center">Brand</th>
+                            <th className="px-4 py-3 text-center">Model</th>
+                            <th className="px-4 py-3 text-center">Stock</th>
+                            <th className="px-4 py-3 text-center">Availability</th>
+                            <th className="px-4 py-3 text-center">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -38,15 +44,15 @@ export default function adminProductPage() {
                                 key={p.productID}
                                 className="odd:bg-slate-50 even:bg-white hover:bg-slate-100"
                             >
-                                <td className="px-4 py-3">
+                                <td className="px-4 py-3 flex items-center justify-center">
                                     <img
                                         src={p.images?.[0] ?? "/logo.png"}
                                         alt={p.name}
                                         className="w-14 h-14 object-cover rounded"
                                     />
                                 </td>
-                                <td className="px-4 py-3">{p.productID}</td>
-                                <td className="px-4 py-3">{p.name}</td>
+                                <td className="px-4 py-3 text-center">{p.productID}</td>
+                                <td className="px-4 py-3 text-center">{p.name}</td>
                                 <td className="px-4 py-3 text-right">
                                     ₹{p.price.toLocaleString()}
                                 </td>
@@ -69,6 +75,30 @@ export default function adminProductPage() {
                                             Out of stock
                                         </span>
                                     )}
+                                </td>
+                                <td className="px-4 py-3">
+                                    <button
+                                        onClick={async () => {
+                                            const token = localStorage.getItem("token");
+                                            try {
+                                                await axios.delete(
+                                                    `${import.meta.env.VITE_BACKEND_URL}/products/${p.productID}`,
+                                                    {
+                                                        headers: { Authorization: `Bearer ${token}` },
+                                                    }
+                                                );
+                                                toast.success("Product deleted successfully");
+                                                setLoaded(false);
+                                            } catch (error) {
+                                                console.error("Error deleting product:", error);
+                                                toast.error(error?.response?.data?.message || "Failed to delete product");
+                                            }
+                                        }}
+                                        className="w-[100px] bg-red-600 flex justify-center items-center text-white p-2 rounded-2xl cursor-pointer hover:bg-red-500 "
+                                    >
+                                        Delete
+                                    </button>
+
                                 </td>
                             </tr>
                         ))}

@@ -26,38 +26,24 @@ app.use(express.json())
 
 
 app.use(
+    // attach user to req if a valid Bearer token is present
     (req, res, next) => {
+        const authorizationHeader = req.header("Authorization");
 
-        const authorizationHeader = req.header("Authorization")
+        if (!authorizationHeader) return next();
 
-        if (authorizationHeader != null) {
+        const token = authorizationHeader.replace("Bearer ", "");
 
-            const token = authorizationHeader.replace("Bearer ", "")
+        jwt.verify(token, process.env.JWT_SECRET, (error, content) => {
+            if (error || !content) {
+                // invalid token — do not block here, just continue without user
+                console.log("invalid token");
+                return next();
+            }
 
-
-            jwt.verify(token, process.env.JWT_SECRET,
-                (error, content) => {
-
-                    if (content == null) {
-
-                        console.log("invalid token")
-
-                        res.json({
-                            message: "invalid token"
-                        })
-
-                    } else {
-
-                        req.user = content
-
-                        next()
-                    }
-                }
-            )
-        } else {
-            next()
-        }
-
+            req.user = content;
+            next();
+        });
     }
 )
 
