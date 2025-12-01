@@ -3,6 +3,7 @@ import {BiPlus} from "react-icons/bi";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import Loader from "../../components/loader";
 export default function adminProductPage() {
     const [products, setProducts] = useState([]);
     const [loaded, setLoaded] = useState(false);
@@ -22,7 +23,7 @@ export default function adminProductPage() {
     return (
         <div className="w-full p-8 flex justify-center">
             <div className="bg-white shadow-lg rounded-lg overflow-auto mx-auto max-w-6xl">
-                <table className="min-w-full table-auto">
+               {loaded ? <table className="min-w-full table-auto">
                     <thead className="bg-accent text-white">
                         <tr>
                             <th className="px-4 py-3 text-center">Image</th>
@@ -103,7 +104,7 @@ export default function adminProductPage() {
                             </tr>
                         ))}
                     </tbody>
-                </table>
+                </table>: <Loader />}
             </div>
 
             <Link
