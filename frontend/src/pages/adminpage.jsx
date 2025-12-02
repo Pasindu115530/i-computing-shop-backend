@@ -5,6 +5,7 @@ import { FiUsers } from "react-icons/fi";
 import { GoCodeReview } from "react-icons/go";
 import AdminProductPage from "./admin/adminProductpage";
 import AdminAddProductPage from "./admin/adminAddProductPage";
+import AdminUpdateProductPage from "./admin/adminUpdateProductPage";
 
 
 export default function adminpage(){
@@ -31,6 +32,7 @@ export default function adminpage(){
                         <Route path="/" element={<h1>Orders</h1>} />
                         <Route path="/products" element={<AdminProductPage />} />
                         <Route path="/add-items" element={<AdminAddProductPage/>} />
+                        <Route path="/update-item" element={<AdminUpdateProductPage />} />
                         <Route path="/users" element={<h1>Users</h1>} />
                         <Route path="/reviews" element={<h1>Reviews</h1>} />
                     </Routes>
