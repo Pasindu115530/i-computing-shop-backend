@@ -26,22 +26,7 @@ export function createProduct(req, res) {
             });
         })
         .catch((error) => {
-            if (error.code === 11000) {
-                res.status(400).json({
-                    message: "Product with this ID already exists",
-                    error: "Duplicate productID",
-                });
-            } else if (error.name === 'ValidationError') {
-                res.status(400).json({
-                    message: "Validation error",
-                    error: error.message,
-                });
-            } else {
-                res.status(500).json({
-                    message: "Error creating product",
-                    error: error.message,
-                });
-            }
+            next(error);
         });
 }
 
@@ -51,23 +36,13 @@ export function getAllProducts(req, res) {
             .then((products) => {
                 res.json(products);
             })
-            .catch((error) => {
-                res.status(500).json({
-                    message: "Error fetching products",
-                    error: error.message,
-                });
-            });
+            .catch((error) => next(error));
     } else {
         Product.find({ isAvailable: true })
             .then((products) => {
                 res.json(products);
             })
-            .catch((error) => {
-                res.status(500).json({
-                    message: "Error fetching products",
-                    error: error.message,
-                });
-            });
+            .catch((error) => next(error));
     }
 }
 
@@ -93,12 +68,7 @@ export function deleteProduct(req, res) {
                 });
             }
         })
-        .catch((error) => {
-            res.status(500).json({
-                message: "Error deleting product",
-                error: error.message
-            });
-        });
+        .catch((error) => next(error));
 }
 
 export function updateProduct(req, res) {
@@ -123,19 +93,7 @@ export function updateProduct(req, res) {
                 });
             }
         })
-        .catch((error) => {
-            if (error.code === 11000) {
-                res.status(400).json({
-                    message: "Cannot update to duplicate productID",
-                    error: error.message,
-                });
-            } else {
-                res.status(500).json({
-                    message: "Error updating product",
-                    error: error.message
-                });
-            }
-        });
+        .catch((error) => next(error));
 }
 
 export function getProductByID(req, res) {
@@ -161,10 +119,5 @@ export function getProductByID(req, res) {
                 }
             }
         })
-        .catch((error) => {
-            res.status(500).json({
-                message: "Error fetching product",
-                error: error.message
-            });
-        });
+        .catch((error) => next(error));
 }

@@ -23,6 +23,8 @@ export default function LoginPage(){
                 password: password
             });
             console.log("Login response:", res.data);
+            // Log token received from backend for debugging
+            console.log("Token (from response):", res.data.token);
             toast.success(res.data.message);
 
             localStorage.setItem("token", res.data.token);
@@ -30,6 +32,7 @@ export default function LoginPage(){
             // Backend returns token but not the role directly.
             // Decode the JWT payload to obtain the role when needed.
             const token = res.data.token || localStorage.getItem("token");
+            console.log("Token (stored):", token);
             let role = res.data.role;
             if (!role && token) {
                 try {

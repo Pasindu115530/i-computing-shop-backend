@@ -30,7 +30,6 @@ const productSchema = new mongoose.Schema(
         modelNumber: {
             type: String,
             required: true,
-            unique: true,
             default: "standard"
         },
         images: {

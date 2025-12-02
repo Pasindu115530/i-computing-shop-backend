@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { AiFillProduct } from "react-icons/ai";
 import axios from "axios";
 import toast from "react-hot-toast";
+import uploadFile from '../../lib/mediaUpload';
 
 export default function AdminAddProductPage() {
         const [ProductID, setProductID] = useState("");
@@ -12,7 +13,7 @@ export default function AdminAddProductPage() {
         const[price,setPrice]=useState(0);  
         const[labelledPrice,setLabelledPrice]=useState(0);
         const[modelNumber,setModelNumber]=useState("standard");
-        const[images,setImages]=useState("");
+        const[files,setFiles]=useState([]);
         const[category,setCategory]=useState("");
         const[brand,setBrand]=useState("Generic");
         const[stock,setStock]=useState(0);  
@@ -28,6 +29,18 @@ export default function AdminAddProductPage() {
             return;
         }
 
+        const imagePromises = []
+        for(let i=0 ; i<files.length ; i++){
+            const promise = uploadFile(files[i]);
+            imagePromises.push(promise);
+        }
+        const imagesArray = await Promise.all(imagePromises).catch((error)=>{
+            console.error("Image upload failed:", error);
+            toast.error("Image upload failed");
+        });
+
+        
+
         if(ProductID == "" || name =="" || description =="" || category =="" || brand =="" || modelNumber ==""){
             toast.error("Please fill in all required fields");
             return;
@@ -35,7 +48,8 @@ export default function AdminAddProductPage() {
 
         try{
             const altnamesArray = altNames ? altNames.split(",").map(s=>s.trim()).filter(Boolean) : [];
-            const imagesArray = images ? images.split(",").map(s=>s.trim()).filter(Boolean) : [];
+         
+            // `imagesArray` is produced above from uploaded files; use that instead of a non-existent `images` variable.
             await axios.post(import.meta.env.VITE_BACKEND_URL + "/products/" , {
                     productID : ProductID,
                     name : name,
@@ -97,7 +111,7 @@ export default function AdminAddProductPage() {
                   
                     <div className="my-[10px] w-full"  >
                         <label className="text-black font-bold">Images</label>
-                        <input type="text" className="w-full border-[2px] mt-[10px]  p-[10px] focus:outline none focus:ring-2 focus:ring-black rounded-xl px-[20px] " value={images} onChange={(e)=>setImages(e.target.value)} />
+                        <input type="file" multiple={true} className="w-full border-[2px] mt-[10px]  p-[10px] focus:outline none focus:ring-2 focus:ring-black rounded-xl px-[20px] " onChange={(e)=>setFiles(e.target.files)} />
                     </div>
                     <div className="my-[10px] w-[30%]"  >
                         <label className="text-black font-bold">Categories</label>

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import Loader from "../../components/loader";
+import ProductDeleteButton from "../../components/productDeleteButton";
 export default function adminProductPage() {
     const [products, setProducts] = useState([]);
     const [loaded, setLoaded] = useState(false);
@@ -78,33 +79,13 @@ export default function adminProductPage() {
                                     )}
                                 </td>
                                 <td className="px-4 py-3">
-                                    <button
-                                        onClick={async () => {
-                                            const token = localStorage.getItem("token");
-                                            try {
-                                                await axios.delete(
-                                                    `${import.meta.env.VITE_BACKEND_URL}/products/${p.productID}`,
-                                                    {
-                                                        headers: { Authorization: `Bearer ${token}` },
-                                                    }
-                                                );
-                                                toast.success("Product deleted successfully");
-                                                setLoaded(false);
-                                            } catch (error) {
-                                                console.error("Error deleting product:", error);
-                                                toast.error(error?.response?.data?.message || "Failed to delete product");
-                                            }
-                                        }}
-                                        className="w-[100px] bg-red-600 flex justify-center items-center text-white p-2 rounded-2xl cursor-pointer hover:bg-red-500 "
-                                    >
-                                        Delete
-                                    </button>
+                                    <ProductDeleteButton productID={p.productID} onDeleted={() => setLoaded(false)} />
 
                                 </td>
                             </tr>
                         ))}
                     </tbody>
-                </table>: <Loader />}
+                </table>: <Loader  />}
             </div>
 
             <Link

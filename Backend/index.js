@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken"
 import productRouter from "./routes/productRouter.js"
 import cors from "cors"
 import dotenv from "dotenv"
+import errorHandler from "./middleware/errorHandler.js"
 
 dotenv.config()
 
@@ -51,6 +52,9 @@ app.use(
 
 app.use("/api/users", userRouter)
 app.use("/api/products", productRouter)
+
+// Centralized error handler
+app.use(errorHandler)
 
 
 app.listen(4900,
