@@ -10,7 +10,11 @@ export default function AdminUpdateProductPage() {
         const location = useLocation();
         const [ProductID, setProductID] = useState(location.state.productID);
         const[name,setName]=useState(location.state.name);
-        const[altNames,setAltNames]=useState(location.state.altNames );
+        // Normalize altNames to a comma-separated string for the input field (accept arrays or strings)
+        const initialAltNames = Array.isArray(location.state.altNames)
+            ? location.state.altNames.join(', ')
+            : (location.state.altNames ?? '');
+        const[altNames,setAltNames]=useState(initialAltNames);
         const[description,setDescription]=useState(location.state.description );
         const[price,setPrice]=useState(location.state.price);  
         const[labelledPrice,setLabelledPrice]=useState(location.state.labelledPrice);
@@ -39,8 +43,9 @@ export default function AdminUpdateProductPage() {
         let imagesArray = await Promise.all(imagePromises).catch((error)=>{
             console.error("Image upload failed:", error);
             toast.error("Image upload failed");
-        });
-        if(imagesArray.length === 0){
+            return [];
+        }) || [];
+        if((!imagesArray || imagesArray.length === 0) && Array.isArray(location.state.images)){
             imagesArray = location.state.images;
         }
 
@@ -52,7 +57,13 @@ export default function AdminUpdateProductPage() {
         }
 
         try{
-            const altnamesArray = altNames ? altNames.split(",").map(s=>s.trim()).filter(Boolean) : [];
+            // Build alt names array: accept the input as a comma-separated string, or if somehow an array, use it directly.
+            let altnamesArray = [];
+            if (Array.isArray(altNames)) {
+                altnamesArray = altNames.map(String).map(s=>s.trim()).filter(Boolean);
+            } else if (typeof altNames === 'string') {
+                altnamesArray = altNames.split(",").map(s=>s.trim()).filter(Boolean);
+            }
          
             // `imagesArray` is produced above from uploaded files; use that instead of a non-existent `images` variable.
             await axios.put(import.meta.env.VITE_BACKEND_URL + "/products/"+ProductID , {
