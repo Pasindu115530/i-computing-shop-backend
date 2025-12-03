@@ -26,7 +26,7 @@ export default function ProductPage(){
     return(
         <div className="w-full h-full overflow-y-scroll max-h-full">
             
-            <div className="w-full min-h-[calc(100%-100px)] bg-red-900 flex">
+            <div className="w-full min-h-[calc(100%-100px)]  flex">
                 {
                     !loaded ? <Loader /> :
                     <div className="w-full flex flex-wrap justify-center gap-6 p-6">
