@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import Loader from "../components/loader";
 import ImageSlider from "../components/imageSlider";
+import { addCart, getCart } from "../lib/cart";
 
 export default function ProductOverview() {
     const params = useParams();
@@ -68,11 +69,15 @@ export default function ProductOverview() {
 
                         {/* Buttons */}
                         <div className="w-full flex gap-4 mt-6">
-                            <button className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-3 rounded-lg text-lg font-semibold shadow-md transition-all duration-200">
+                            <button onClick={()=>{
+                                addCart(product,1)
+                            }} className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-3 rounded-lg text-lg font-semibold shadow-md transition-all duration-200">
                                 Add to Cart
                             </button>
 
-                            <button className="flex-1 bg-white border border-gray-300 hover:bg-gray-100 text-gray-900 py-3 rounded-lg text-lg font-semibold shadow-sm transition-all duration-200">
+                            <button onClick={()=>{
+                                console.log(getCart())
+                            }} className="flex-1 bg-white border border-gray-300 hover:bg-gray-100 text-gray-900 py-3 rounded-lg text-lg font-semibold shadow-sm transition-all duration-200">
                                 Buy Now
                             </button>
                         </div>
