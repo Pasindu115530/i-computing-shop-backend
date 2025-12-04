@@ -1,7 +1,7 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Loader from "../components/loader";
 import ImageSlider from "../components/imageSlider";
 import { addCart, getCart } from "../lib/cart";
@@ -10,6 +10,7 @@ export default function ProductOverview() {
     const params = useParams();
     const [product, setProduct] = useState(null);
     const [status, setStatus] = useState("loading");
+    const navigate = useNavigate();
 
     useEffect(() => {
         axios
@@ -70,12 +71,21 @@ export default function ProductOverview() {
                         {/* Buttons */}
                         <div className="w-full flex gap-4 mt-6">
                             <button onClick={()=>{
-                                addCart(product,1)
+                                addCart(product,1);
+                                navigate('/cart');
                             }} className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-3 rounded-lg text-lg font-semibold shadow-md transition-all duration-200">
                                 Add to Cart
                             </button>
 
                             <button onClick={()=>{
+                                navigate('/checkout', {state: [{
+                                    productID: product.productID,
+                                    name: product.name,
+                                    price: product.price,
+                                    labelledPrice: product.labelledPrice,
+                                    quantity: product.quantity || 1,
+                                    image: product.images[0]
+                                }]});
                                 console.log(getCart())
                             }} className="flex-1 bg-white border border-gray-300 hover:bg-gray-100 text-gray-900 py-3 rounded-lg text-lg font-semibold shadow-sm transition-all duration-200">
                                 Buy Now
