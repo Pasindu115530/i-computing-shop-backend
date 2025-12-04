@@ -38,6 +38,10 @@ const orderSchema = new mongoose.Schema({
         type:String,
         required:false
     },
+    phonenumber:{
+        type:Number,
+        required:true
+    },
     items:[
         {
             productID: {type:String, required:true},
@@ -52,3 +56,7 @@ const orderSchema = new mongoose.Schema({
 
 
 })
+
+const Order = mongoose.model('Order', orderSchema);
+
+export default Order;

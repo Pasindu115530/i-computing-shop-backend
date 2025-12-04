@@ -1,11 +1,18 @@
 import { useState } from "react";
 import { addCart, getCart, getCartTotal } from "../lib/cart";
-import { Link, Navigate, useLocation } from "react-router-dom";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa6";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 export default function Checkout() {
     const location = useLocation();
     const [cart, setCart] = useState(location.state || []);
+    const [name,setName] = useState("");
+    const [address , setAddress] = useState("");
+    const [phoneNumber , setPhoneNumber] = useState("");
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     if (location.state == null) {
         return <Navigate to="/products" />;
@@ -13,6 +20,47 @@ export default function Checkout() {
 
     const safe = (num) => Number(num) || 0; // helper
     const formatCurrency = (v) => `LKR.${safe(v).toFixed(2)}`;
+
+    async function submitOrder(){
+        const token = localStorage.getItem("token");
+
+
+        if(token == null){
+            toast.error("You must be logged in!")
+            navigate("/login")
+            return;
+        }
+        const orderItems = []
+
+        cart.forEach((item)=>{
+            orderItems.push({
+                productID: item.productID,
+                quantity: item.quantity
+            })
+        })
+        try {
+            setLoading(true);
+            const response = await axios.post(import.meta.env.VITE_API_URL + "/orders", {
+                name: name,
+                address: address,
+                phone: phoneNumber,
+                items: orderItems,
+            }, {
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                },
+            });
+
+            toast.success("Order placed successfully!");
+            localStorage.removeItem("cart");
+            navigate("/orders");
+        } catch (error) {
+            toast.error("Failed to place order. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+
+    }
 
     return (
         <div className="w-full flex flex-col items-center p-6 bg-gray-50 min-h-[70vh]">
@@ -98,11 +146,42 @@ export default function Checkout() {
                         <span className="text-lg font-semibold">Total</span>
                         <span className="text-xl font-bold text-accent">{formatCurrency(getCartTotal())}</span>
                     </div>
+                    <div >
+                        <input
+                            type="text"
+                            placeholder="Name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            className="w-full px-3 py-2 border rounded-md"
+                        />
+                        <input
+                            type="text"
+                            placeholder="Address"
+                            value={address}
+                            onChange={(e) => setAddress(e.target.value)}
+                            className="w-full mt-2 px-3 py-2 border rounded-md"
+                        />
+                        <input
+                            type="text"
+                            placeholder="Phone Number"
+                            value={phoneNumber}
+                            onChange={(e) => setPhoneNumber(e.target.value)}
+                            className="w-full mt-2 px-3 py-2 border rounded-md"
+                        />
+                    </div>
 
-                    <button className="mt-2 w-full px-4 py-3 bg-accent text-white rounded-md hover:bg-accent/90">Order Now</button>
+
+                    <button
+                        onClick={submitOrder}
+                        disabled={loading}
+                        className="mt-2 w-full px-4 py-3 bg-accent text-white rounded-md hover:bg-accent/90 disabled:opacity-60"
+                    >
+                        {loading ? "Placing Order..." : "Order Now"}
+                    </button>
 
                     <Link to="/cart" className="mt-1 block text-center px-4 py-2 border rounded-md text-gray-700">Back to Cart</Link>
                 </aside>
+                
             </div>
         </div>
     );
