@@ -6,6 +6,7 @@ import { GoCodeReview } from "react-icons/go";
 import AdminProductPage from "./admin/adminProductpage";
 import AdminAddProductPage from "./admin/adminAddProductPage";
 import AdminUpdateProductPage from "./admin/adminUpdateProductPage";
+import AdminOrderPage from "./admin/adminOrdersPage";
 
 
 export default function adminpage(){
@@ -29,7 +30,7 @@ export default function adminpage(){
 
                 <div className="w-[calc(100%-300px)] bg-primary h-full max-h-full overflow-y-scroll border-[10px]">
                     <Routes>
-                        <Route path="/" element={<h1>Orders</h1>} />
+                        <Route path="/" element={<AdminOrderPage />} />
                         <Route path="/products" element={<AdminProductPage />} />
                         <Route path="/add-items" element={<AdminAddProductPage/>} />
                         <Route path="/update-item" element={<AdminUpdateProductPage />} />

@@ -8,58 +8,71 @@ import toast from "react-hot-toast";
 export default function Checkout() {
     const location = useLocation();
     const [cart, setCart] = useState(location.state || []);
-    const [name,setName] = useState("");
-    const [address , setAddress] = useState("");
-    const [phoneNumber , setPhoneNumber] = useState("");
+    const [name, setName] = useState("");
+    const [address, setAddress] = useState("");
+    const [phoneNumber, setPhoneNumber] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    if (location.state == null) {
+    // Redirect if cart is empty
+    if (!location.state || cart.length === 0) {
         return <Navigate to="/products" />;
     }
 
-    const safe = (num) => Number(num) || 0; // helper
+    const safe = (num) => Number(num) || 0;
     const formatCurrency = (v) => `LKR.${safe(v).toFixed(2)}`;
 
-    async function submitOrder(){
+    async function submitOrder() {
         const token = localStorage.getItem("token");
 
-
-        if(token == null){
-            toast.error("You must be logged in!")
-            navigate("/login")
+        if (!token) {
+            toast.error("You must be logged in!");
+            navigate("/login");
             return;
         }
-        const orderItems = []
 
-        cart.forEach((item)=>{
-            orderItems.push({
-                productID: item.productID,
-                quantity: item.quantity
-            })
-        })
+        if (!address || !phoneNumber) {
+            toast.error("Please provide your address and phone number");
+            return;
+        }
+
+        const orderItems = cart.map(item => ({
+            productID: item.productID,
+            quantity: item.quantity
+        }));
+
         try {
             setLoading(true);
-            const response = await axios.post(import.meta.env.VITE_API_URL + "/orders", {
-                name: name,
-                address: address,
-                phone: phoneNumber,
-                items: orderItems,
-            }, {
-                headers: {
-                    "Authorization": `Bearer ${token}`,
+
+            const response = await axios.post(
+                import.meta.env.VITE_BACKEND_URL + "/orders",
+                {
+                    name: name || undefined, // backend will fill from user if undefined
+                    address,
+                    phonenumber: phoneNumber,
+                    items: orderItems
                 },
-            });
+                {
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
+            );
 
             toast.success("Order placed successfully!");
             localStorage.removeItem("cart");
+            setCart([]);
             navigate("/orders");
         } catch (error) {
-            toast.error("Failed to place order. Please try again.");
+            console.error(error);
+            if (error.response && error.response.data && error.response.data.message) {
+                toast.error(error.response.data.message);
+            } else {
+                toast.error("Failed to place order. Please try again.");
+            }
         } finally {
             setLoading(false);
         }
-
     }
 
     return (
@@ -70,10 +83,10 @@ export default function Checkout() {
             </header>
 
             <div className="w-[90%] max-w-5xl grid grid-cols-12 gap-6">
+                {/* Cart Items */}
                 <div className="col-span-8 flex flex-col gap-4">
                     {cart.map((item) => {
                         const price = safe(item?.price);
-                        const labelled = safe(item?.labelledPrice);
                         const qty = safe(item?.quantity);
 
                         return (
@@ -86,15 +99,11 @@ export default function Checkout() {
                                     alt={item.name}
                                     className="w-36 h-28 object-cover rounded-md"
                                 />
-
                                 <div className="flex-1 flex flex-col justify-center">
                                     <h3 className="text-xl font-semibold text-gray-800">
                                         {item.name.length > 50 ? item.name.substring(0, 50) + "..." : item.name}
                                     </h3>
                                     <div className="mt-1 flex items-center gap-3">
-                                        {labelled > price && (
-                                            <span className="text-sm text-gray-400 line-through">{formatCurrency(labelled)}</span>
-                                        )}
                                         <span className="text-lg text-accent font-semibold">{formatCurrency(price)}</span>
                                     </div>
                                     <div className="text-xs text-gray-500 mt-2">SKU: {item.productID}</div>
@@ -103,28 +112,19 @@ export default function Checkout() {
                                 <div className="flex flex-col items-center gap-2">
                                     <div className="flex flex-col items-center bg-gray-100 rounded-md p-2">
                                         <button
-                                            onClick={() => {
-                                                addCart(item, 1);
-                                                setCart(getCart());
-                                            }}
+                                            onClick={() => { addCart(item, 1); setCart(getCart()); }}
                                             className="p-1 rounded hover:bg-gray-200"
-                                            aria-label="Increase quantity"
                                         >
                                             <FaChevronUp className="w-5 h-5 text-accent" />
                                         </button>
                                         <span className="text-lg font-medium">{qty}</span>
                                         <button
-                                            onClick={() => {
-                                                addCart(item, -1);
-                                                setCart(getCart());
-                                            }}
+                                            onClick={() => { addCart(item, -1); setCart(getCart()); }}
                                             className="p-1 rounded hover:bg-gray-200"
-                                            aria-label="Decrease quantity"
                                         >
                                             <FaChevronDown className="w-5 h-5 text-accent" />
                                         </button>
                                     </div>
-
                                     <div className="text-sm font-semibold">{formatCurrency(price * qty)}</div>
                                 </div>
                             </div>
@@ -132,6 +132,7 @@ export default function Checkout() {
                     })}
                 </div>
 
+                {/* Order Summary & Form */}
                 <aside className="col-span-4 bg-white rounded-lg shadow-md p-6 flex flex-col gap-4">
                     <h3 className="text-lg font-semibold">Order Summary</h3>
                     <div className="flex justify-between text-gray-600">
@@ -146,30 +147,28 @@ export default function Checkout() {
                         <span className="text-lg font-semibold">Total</span>
                         <span className="text-xl font-bold text-accent">{formatCurrency(getCartTotal())}</span>
                     </div>
-                    <div >
-                        <input
-                            type="text"
-                            placeholder="Name"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            className="w-full px-3 py-2 border rounded-md"
-                        />
-                        <input
-                            type="text"
-                            placeholder="Address"
-                            value={address}
-                            onChange={(e) => setAddress(e.target.value)}
-                            className="w-full mt-2 px-3 py-2 border rounded-md"
-                        />
-                        <input
-                            type="text"
-                            placeholder="Phone Number"
-                            value={phoneNumber}
-                            onChange={(e) => setPhoneNumber(e.target.value)}
-                            className="w-full mt-2 px-3 py-2 border rounded-md"
-                        />
-                    </div>
 
+                    <input
+                        type="text"
+                        placeholder="Name (optional)"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="w-full px-3 py-2 border rounded-md"
+                    />
+                    <input
+                        type="text"
+                        placeholder="Address"
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        className="w-full mt-2 px-3 py-2 border rounded-md"
+                    />
+                    <input
+                        type="text"
+                        placeholder="Phone Number"
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        className="w-full mt-2 px-3 py-2 border rounded-md"
+                    />
 
                     <button
                         onClick={submitOrder}
@@ -179,9 +178,10 @@ export default function Checkout() {
                         {loading ? "Placing Order..." : "Order Now"}
                     </button>
 
-                    <Link to="/cart" className="mt-1 block text-center px-4 py-2 border rounded-md text-gray-700">Back to Cart</Link>
+                    <Link to="/cart" className="mt-1 block text-center px-4 py-2 border rounded-md text-gray-700">
+                        Back to Cart
+                    </Link>
                 </aside>
-                
             </div>
         </div>
     );

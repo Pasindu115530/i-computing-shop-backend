@@ -79,3 +79,20 @@ export async function createOrder(req, res) {
     
 
         }
+
+export async function getOrders(req, res) {
+    if(req.user == null){
+        return res.status(401).json({ message: "Authentication required" });        
+}
+    if(req.user.role === "admin"){
+        const orders = await Order.find().sort({ date: -1 });
+        return res.json(orders);
+    }else{
+        const orders = await Order.find({ email: req.user.email }).sort({ date: -1 });
+        return res.json(orders);
+    }
+     
+   
+
+
+}    
