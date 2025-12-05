@@ -70,6 +70,9 @@ export default function AdminOrderPage() {
                                     <td className="px-4 py-4 text-sm">
                                         <div className="text-slate-800">{p.name}</div>
                                         <div className="text-xs text-slate-500">{p.email}</div>
+                                        {p.notes ? (
+                                            <div className="text-xs text-rose-600 truncate max-w-sm mt-1">Note: {p.notes}</div>
+                                        ) : null}
                                     </td>
                                     <td className="px-4 py-4 text-sm hidden md:table-cell">{new Date(p.date).toLocaleString()}</td>
                                     <td className="px-4 py-4 text-center">

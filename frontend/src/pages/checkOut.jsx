@@ -11,6 +11,7 @@ export default function Checkout() {
     const [name, setName] = useState("");
     const [address, setAddress] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
+    const [note, setNote] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
@@ -50,7 +51,8 @@ export default function Checkout() {
                     name: name || undefined, // backend will fill from user if undefined
                     address,
                     phonenumber: phoneNumber,
-                    items: orderItems
+                    items: orderItems,
+                    notes: note
                 },
                 {
                     headers: {
@@ -62,6 +64,7 @@ export default function Checkout() {
             toast.success("Order placed successfully!");
             localStorage.removeItem("cart");
             setCart([]);
+            setNote("");
             navigate("/orders");
         } catch (error) {
             console.error(error);
@@ -169,6 +172,14 @@ export default function Checkout() {
                         onChange={(e) => setPhoneNumber(e.target.value)}
                         className="w-full mt-2 px-3 py-2 border rounded-md"
                     />
+
+                        <textarea
+                            placeholder="Add a note for the order (optional)"
+                            value={note}
+                            onChange={(e) => setNote(e.target.value)}
+                            className="w-full mt-2 px-3 py-2 border rounded-md"
+                            rows={3}
+                        />
 
                     <button
                         onClick={submitOrder}

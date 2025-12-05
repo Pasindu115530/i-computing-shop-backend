@@ -6,6 +6,7 @@ export default function ViewOrderInfo(props) {
     const { order, onStatusChange } = props || {};
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [status, setStatus] = useState(order ? order.status : 'Pending');
+    const [note, setNote] = useState(order ? order.notes : '');
 
     useEffect(() => {
         // tell react-modal which element is the app root for accessibility
@@ -40,12 +41,18 @@ export default function ViewOrderInfo(props) {
 
                     {order ? (
                         <div className="mt-4 text-sm text-slate-700">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                                 <div><strong>Customer:</strong> {order.name ?? '—'}</div>
                                 <div><strong>Email:</strong> {order.email ?? '—'}</div>
                                 <div><strong>Phone:</strong> {order.phonenumber ?? order.phoneNumber ?? '—'}</div>
                                 <div><strong>Date:</strong> {order.date ? new Date(order.date).toLocaleString() : '—'}</div>
                                 <div className="md:col-span-2"><strong>Address:</strong> {order.address ?? '—'}</div>
+                                <div className="md:col-span-2"><strong>Note:</strong> 
+                                    <textarea className="w-full mt-1 p-2 border rounded-md bg-slate-50" rows={3} value={note} onChange={(e)=> {
+                                        setNote(e.target.value);
+                                    }}></textarea>
+                                
+                                </div>
                                 <div>
                                     <strong>Status:</strong>
                                     <span className={`px-2 py-1 rounded-full text-xs ml-2 ${status === 'Delivered' ? 'bg-emerald-100 text-emerald-800' : status === 'Shipped' ? 'bg-yellow-100 text-amber-800' : 'bg-indigo-100 text-indigo-800'}`}>{status ?? 'Pending'}</span>
@@ -104,6 +111,15 @@ export default function ViewOrderInfo(props) {
                                     </table>
                                 </div>
                             </div>
+                            <div className="mt-4 text-sm text-slate-500">
+
+                                { (order.notes != note || order.status != status  ) && 
+                                    <button 
+                                    onClick={() => setIsModalOpen(false)}
+                                    className="bg-accent/70 hover:bg-accent text-white px-4 py-2 rounded-md"
+                                >Save Changes
+                                </button>}
+                            </div>    
                         </div>
                     ) : (
                         <div className="text-sm text-slate-600 mt-4">Order information not available.</div>

@@ -54,6 +54,7 @@ export async function createOrder(req, res) {
         orderID: orderID,
         email : req.user.email,
         address : req.body.address,
+        notes: req.body.notes ?? req.body.note ?? undefined,
         total : total,
         items : items,
         phonenumber: req.body.phonenumber,
