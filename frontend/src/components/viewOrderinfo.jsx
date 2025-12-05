@@ -3,8 +3,9 @@ import toast from "react-hot-toast";
 import Modal from "react-modal";
 
 export default function ViewOrderInfo(props) {
-    const { order } = props || {};
+    const { order, onStatusChange } = props || {};
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [status, setStatus] = useState(order ? order.status : 'Pending');
 
     useEffect(() => {
         // tell react-modal which element is the app root for accessibility
@@ -14,6 +15,13 @@ export default function ViewOrderInfo(props) {
             // ignore in non-browser environments
         }
     }, []);
+
+    // keep status in sync when modal opens or order changes
+    useEffect(() => {
+        if (isModalOpen && order) {
+            setStatus(order.status ?? 'Pending');
+        }
+    }, [isModalOpen, order]);
 
     return (
         <>
@@ -38,7 +46,27 @@ export default function ViewOrderInfo(props) {
                                 <div><strong>Phone:</strong> {order.phonenumber ?? order.phoneNumber ?? '—'}</div>
                                 <div><strong>Date:</strong> {order.date ? new Date(order.date).toLocaleString() : '—'}</div>
                                 <div className="md:col-span-2"><strong>Address:</strong> {order.address ?? '—'}</div>
-                                <div><strong>Status:</strong> <span className={`px-2 py-1 rounded-full text-xs ${order.status === 'Delivered' ? 'bg-emerald-100 text-emerald-800' : order.status === 'Shipped' ? 'bg-yellow-100 text-amber-800' : 'bg-indigo-100 text-indigo-800'}`}>{order.status ?? 'Pending'}</span></div>
+                                <div>
+                                    <strong>Status:</strong>
+                                    <span className={`px-2 py-1 rounded-full text-xs ml-2 ${status === 'Delivered' ? 'bg-emerald-100 text-emerald-800' : status === 'Shipped' ? 'bg-yellow-100 text-amber-800' : 'bg-indigo-100 text-indigo-800'}`}>{status ?? 'Pending'}</span>
+                                    <select className="ml-4 border rounded px-2 py-1 text-sm"
+                                        value={status || 'Pending'}
+                                        onChange={(e) => {
+                                            const newStatus = e.target.value;
+                                            setStatus(newStatus);
+                                            try {
+                                                if (typeof onStatusChange === 'function' && order && order.orderID) {
+                                                    onStatusChange(order.orderID, newStatus);
+                                                }
+                                            } catch (err) {
+                                                // ignore callback errors
+                                            }
+                                        }}>
+                                    <option value="Pending">Pending</option>
+                                    <option value="Shipped">Shipped</option>
+                                    <option value="Delivered">Delivered</option>
+                                </select>
+                                </div>
                                 <div className="text-right"><strong>Total:</strong> ${order.total ?? '0.00'}</div>
                             </div>
 
