@@ -79,7 +79,10 @@ export default function AdminOrderPage() {
                                     </td>
                                     <td className="px-4 py-4 text-right font-medium">${p.total}</td>
                                     <td className="px-4 py-4 text-center">
-                                        <ViewOrderInfo order={p} />
+                                        <ViewOrderInfo order={p} onStatusChange={(id, newStatus) => {
+                                            setOrders((prev) => prev.map(o => o.orderID === id ? { ...o, status: newStatus } : o));
+                                            toast.success(`Order ${id} set to ${newStatus}`);
+                                        }} />
                                     </td>
                                 </tr>
                             ))}
