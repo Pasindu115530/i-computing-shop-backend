@@ -31,12 +31,7 @@ export default function AdminOrderPage() {
         }
     }, [loaded]);
 
-    function handleDeleteOrder(orderID) {
-        const ok = window.confirm("Remove this order from the list? This only affects the admin UI.");
-        if (!ok) return;
-        setOrders((prev) => prev.filter((o) => o.orderID !== orderID));
-        toast.success("Order removed (UI only)");
-    }
+  
 
 
     return (
@@ -84,9 +79,7 @@ export default function AdminOrderPage() {
                                     </td>
                                     <td className="px-4 py-4 text-right font-medium">${p.total}</td>
                                     <td className="px-4 py-4 text-center">
-                                        <ViewOrderInfo/>
-                                        
-                                       
+                                        <ViewOrderInfo order={p} />
                                     </td>
                                 </tr>
                             ))}
