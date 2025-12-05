@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import Loader from "../../components/loader";
+import ViewOrderInfo from "../../components/viewOrderinfo";
 
 export default function AdminOrderPage() {
     const [orders,setOrders] = useState([]);
@@ -37,23 +38,6 @@ export default function AdminOrderPage() {
         toast.success("Order removed (UI only)");
     }
 
-    function handleCycleStatus(orderID) {
-        setUpdatingId(orderID);
-        setOrders((prev) =>
-            prev.map((o) => {
-                if (o.orderID !== orderID) return o;
-                const order = { ...o };
-                if (!order.status || order.status === "Pending") order.status = "Shipped";
-                else if (order.status === "Shipped") order.status = "Delivered";
-                else order.status = "Pending";
-                return order;
-            })
-        );
-        setTimeout(() => {
-            setUpdatingId(null);
-            toast.success("Order status updated (UI only)");
-        }, 600);
-    }
 
     return (
         <div className="w-full p-8 flex justify-center">
@@ -100,28 +84,9 @@ export default function AdminOrderPage() {
                                     </td>
                                     <td className="px-4 py-4 text-right font-medium">${p.total}</td>
                                     <td className="px-4 py-4 text-center">
-                                        <div className="flex items-center justify-center gap-2">
-                                            <Link to={`/orders/${p.orderID}`} className="p-2 rounded-md hover:bg-slate-100" title="View order">
-                                                <HiOutlineEye className="text-xl text-slate-700" />
-                                            </Link>
-
-                                            <button
-                                                onClick={() => handleCycleStatus(p.orderID)}
-                                                className="p-2 rounded-md hover:bg-slate-100"
-                                                title="Cycle status"
-                                                disabled={updatingId === p.orderID}
-                                            >
-                                                <HiSwitchHorizontal className={`text-xl ${updatingId === p.orderID ? 'text-gray-400 animate-pulse' : 'text-slate-700'}`} />
-                                            </button>
-
-                                            <button
-                                                onClick={() => handleDeleteOrder(p.orderID)}
-                                                className="p-2 rounded-md hover:bg-rose-50"
-                                                title="Remove order"
-                                            >
-                                                <HiOutlineTrash className="text-xl text-rose-600" />
-                                            </button>
-                                        </div>
+                                        <ViewOrderInfo/>
+                                        
+                                       
                                     </td>
                                 </tr>
                             ))}
