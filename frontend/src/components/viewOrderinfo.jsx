@@ -7,7 +7,7 @@ export default function ViewOrderInfo(props) {
     const { order, onStatusChange } = props || {};
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [status, setStatus] = useState(order ? order.status : 'Pending');
-    const [note, setNote] = useState(order ? order.notes : '');
+    const [note, setNote] = useState(order ? (order.notes ?? '') : '');
 
     useEffect(() => {
         // tell react-modal which element is the app root for accessibility
@@ -48,18 +48,14 @@ export default function ViewOrderInfo(props) {
                                 <div><strong>Phone:</strong> {order.phonenumber ?? order.phoneNumber ?? '—'}</div>
                                 <div><strong>Date:</strong> {order.date ? new Date(order.date).toLocaleString() : '—'}</div>
                                 <div className="md:col-span-2"><strong>Address:</strong> {order.address ?? '—'}</div>
-                                <div className="md:col-span-2"><strong>Note:</strong> 
-                                    <textarea className="w-full mt-1 p-2 border rounded-md bg-slate-50" rows={3} value={note} onChange={(e)=> {
-                                        if(e.target.value == "" ){
-                                            setNote(null);
-                                        }else{
-                                            setNote(e.target.value);
-                                        }
-                                    }
-                                }>
-
-                                    </textarea>
-                                
+                                <div className="md:col-span-2">
+                                    <strong>Note:</strong>
+                                    <textarea
+                                        className="w-full mt-1 p-2 border rounded-md bg-slate-50"
+                                        rows={3}
+                                        value={note}
+                                        onChange={(e) => setNote(e.target.value || '')}
+                                    />
                                 </div>
                                 <div>
                                     <strong>Status:</strong>
