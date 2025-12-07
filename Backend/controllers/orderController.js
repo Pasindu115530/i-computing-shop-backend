@@ -97,3 +97,22 @@ export async function getOrders(req, res) {
 
 
 }    
+
+export async function updateOrder(req, res) {
+    if(req.user == null || req.user.role !== "admin"){
+        return res.status(401).json({ message: "Authentication required" });         
+    }
+    try{
+    const orderID = req.params.orderID;
+    const status = req.body.status;
+    const notes = req.body.notes ?? req.body.note ?? undefined;
+
+    await Order.updateOne(
+        { orderID: orderID },
+        { $set: { status: status, notes: notes } }
+    );
+    return res.json({ message: "Order updated successfully" });
+    }catch(err){
+        return res.status(500).json({ message: "Server error", error: err.message });
+    }
+}
