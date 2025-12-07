@@ -123,7 +123,8 @@ export default function ViewOrderInfo(props) {
                                         const token = localStorage.getItem('token');
                                         axios.put(import.meta.env.VITE_BACKEND_URL + `/orders/${order.orderID}`, {
                                             orderID: order.orderID,
-                                            status: status, 
+                                            status: status,
+                                            notes: note, 
                                         }, {
                                             headers: {
                                                 Authorization: `Bearer ${token}`
