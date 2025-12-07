@@ -122,7 +122,24 @@ export default function ViewOrderInfo(props) {
 
                                 { (order.notes != note || order.status != status  ) && 
                                     <button 
-                                    onClick={() => setIsModalOpen(false)}
+                                    onClick={() => {
+                                        const token = localStorage.getItem('token');
+                                        axios.put(import.meta.env.VITE_API_URL + `/orders/${order.orderID}`, {
+                                            orderID: order.orderID,
+                                            status: status, 
+                                        }, {
+                                            headers: {
+                                                Authorization: `Bearer ${token}`
+                                            }
+                                        })
+                                        .then((response) => {
+                                            toast.success("Order updated successfully");
+                                            setIsModalOpen(false);
+                                        })
+                                        .catch((error) => {
+                                            toast.error("Failed to update order");
+                                        });
+                                    }}
                                     className="bg-accent/70 hover:bg-accent text-white px-4 py-2 rounded-md"
                                 >Save Changes
                                 </button>}
