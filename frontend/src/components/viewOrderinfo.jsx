@@ -49,8 +49,15 @@ export default function ViewOrderInfo(props) {
                                 <div className="md:col-span-2"><strong>Address:</strong> {order.address ?? '—'}</div>
                                 <div className="md:col-span-2"><strong>Note:</strong> 
                                     <textarea className="w-full mt-1 p-2 border rounded-md bg-slate-50" rows={3} value={note} onChange={(e)=> {
-                                        setNote(e.target.value);
-                                    }}></textarea>
+                                        if(e.target.value == "" ){
+                                            setNote(null);
+                                        }else{
+                                            setNote(e.target.value);
+                                        }
+                                    }
+                                }>
+
+                                    </textarea>
                                 
                                 </div>
                                 <div>
