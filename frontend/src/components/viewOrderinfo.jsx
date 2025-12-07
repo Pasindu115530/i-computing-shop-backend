@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import Modal from "react-modal";
+import axios from "axios";
 
 export default function ViewOrderInfo(props) {
     const { order, onStatusChange } = props || {};
@@ -124,7 +125,7 @@ export default function ViewOrderInfo(props) {
                                     <button 
                                     onClick={() => {
                                         const token = localStorage.getItem('token');
-                                        axios.put(import.meta.env.VITE_API_URL + `/orders/${order.orderID}`, {
+                                        axios.put(import.meta.env.VITE_BACKEND_URL + `/orders/${order.orderID}`, {
                                             orderID: order.orderID,
                                             status: status, 
                                         }, {
@@ -135,6 +136,7 @@ export default function ViewOrderInfo(props) {
                                         .then((response) => {
                                             toast.success("Order updated successfully");
                                             setIsModalOpen(false);
+                                            window.location.reload();
                                         })
                                         .catch((error) => {
                                             toast.error("Failed to update order");
