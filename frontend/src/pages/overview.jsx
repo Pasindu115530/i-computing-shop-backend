@@ -36,12 +36,12 @@ export default function ProductOverview() {
             )}
 
             {status === "success" && product && (
-                <div className="w-full min-h-[calc(100vh-100px)] flex bg-gray-50 p-6">
-                    <div className="w-1/2 h-full flex justify-center items-center bg-white rounded-xl shadow p-6">
+                <div className="w-full  min-h-[calc(100vh-100px)] flex lg:flex-row flex-col bg-red-500 p-6">
+                    <div className="lg:w-1/2 w-full bg- h-full flex justify-center items-center bg-white rounded-xl shadow p-6">
                         <ImageSlider images={product.images || []} />
                     </div>
 
-                    <div className="w-1/2 h-full p-10 flex flex-col gap-6">
+                    <div className="lg:w-1/2 w-full  p-10 lg:flex flex-col gap-6">
                         <div>
                             <h1 className="text-4xl font-bold text-gray-900">{product.name}</h1>
                             <p className="text-sm text-gray-500 mt-1">
@@ -50,11 +50,12 @@ export default function ProductOverview() {
                             <p className="text-lg font-medium text-indigo-600 mt-2">
                                 {product.category}
                             </p>
-                        </div>
-
-                        <p className="text-gray-700 leading-relaxed flex-1 bg-white p-4 rounded-lg shadow-sm">
+                            <p className="text-gray-700 leading-relaxed flex-1 bg-white p-4 mt-10 rounded-lg shadow-sm">
                             {product.description}
                         </p>
+                        </div>
+
+                        
 
                         {/* Price Section */}
                         <div className="w-full mt-2">
