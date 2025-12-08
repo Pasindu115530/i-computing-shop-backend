@@ -87,7 +87,7 @@ export default function Checkout() {
 
             <div className="w-[90%] max-w-5xl grid grid-cols-12 gap-6">
                 {/* Cart Items */}
-                <div className="col-span-8 flex flex-col gap-4">
+                <div className="col-span-12 lg:col-span-8 flex flex-col gap-4">
                     {cart.map((item) => {
                         const price = safe(item?.price);
                         const qty = safe(item?.quantity);
@@ -95,12 +95,12 @@ export default function Checkout() {
                         return (
                             <div
                                 key={item.productID}
-                                className="w-full rounded-xl overflow-hidden shadow-sm bg-white flex gap-4 p-4 items-center"
+                                className="w-full rounded-xl overflow-hidden shadow-sm bg-white flex flex-col md:flex-row gap-4 p-4 items-start md:items-center"
                             >
                                 <img
                                     src={item.image}
                                     alt={item.name}
-                                    className="w-36 h-28 object-cover rounded-md"
+                                    className="w-24 h-20 md:w-36 md:h-28 object-cover rounded-md"
                                 />
                                 <div className="flex-1 flex flex-col justify-center">
                                     <h3 className="text-xl font-semibold text-gray-800">
@@ -112,7 +112,7 @@ export default function Checkout() {
                                     <div className="text-xs text-gray-500 mt-2">SKU: {item.productID}</div>
                                 </div>
 
-                                <div className="flex flex-col items-center gap-2">
+                                <div className="flex flex-col items-center gap-2 ml-auto md:ml-0">
                                     <div className="flex flex-col items-center bg-gray-100 rounded-md p-2">
                                         <button
                                             onClick={() => { addCart(item, 1); setCart(getCart()); }}
@@ -136,7 +136,7 @@ export default function Checkout() {
                 </div>
 
                 {/* Order Summary & Form */}
-                <aside className="col-span-4 bg-white rounded-lg shadow-md p-6 flex flex-col gap-4">
+                <aside className="col-span-12 lg:col-span-4 bg-white rounded-lg shadow-md p-6 flex flex-col gap-4 lg:sticky lg:top-24">
                     <h3 className="text-lg font-semibold">Order Summary</h3>
                     <div className="flex justify-between text-gray-600">
                         <span>Subtotal</span>
