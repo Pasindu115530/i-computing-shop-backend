@@ -7,14 +7,42 @@ import AdminProductPage from "./admin/adminProductpage";
 import AdminAddProductPage from "./admin/adminAddProductPage";
 import AdminUpdateProductPage from "./admin/adminUpdateProductPage";
 import AdminOrderPage from "./admin/adminOrdersPage";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import Loader from "../components/loader";
 
 
 export default function adminpage(){
     // Add at top of this file: 
+    const[user,setUser]= useState(null);
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (token == null) {    
+            window.location.href = "/";
+            return;}
+        axios.get(import.meta.env.VITE_BACKEND_URL + "/users/",{
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+        }).then((response) => {
+            if (!response.data.isAdmin) {S
+                window.location.href = "/";
+            }else{
+                setUser(response.data);
+            }
+        })
+        .catch((error) => {
+            console.error("Error fetching user data:", error);
+            window.location.href = "/";
+        });
+        } , []);
 
+       
         return(
             <div className="w-full h-full bg-accent flex">
-                <div className="w-[300px] bg-accent h-full ">
+
+                {user ? <>
+                    <div className="w-[300px] bg-accent h-full ">
                     <div className="w-full h-[100px] text-primary flex items-center ">
                         <img src="/logo.png" className="h-full" />
                         <h1 className="text 2xl">Admin Panel</h1>
@@ -38,6 +66,7 @@ export default function adminpage(){
                         <Route path="/reviews" element={<h1>Reviews</h1>} />
                     </Routes>
                 </div>
+                </>: <Loader />}
             </div>
         )
 }
