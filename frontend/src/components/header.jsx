@@ -23,7 +23,7 @@ export default function Header(){
                 <Link to="/contact">Contacts
                 </Link>
             </div>
-            <div className="w-full h-full flex justify-end items-center pr-20">
+            <div className="absolute right-35 top-0 h-full flex items-center">
                 <UserData/>
             </div>
             <Link to="/cart" className="absolute right-8 top-1/2 -translate-y-1/2 text-primary border border-primary px-4 py-2 rounded hover:bg-primary hover:text-accent transition-all duration-200">
