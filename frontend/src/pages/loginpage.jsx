@@ -2,12 +2,17 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
+import Loader from "../components/loader";
+import { FaGoogle } from "react-icons/fa";
+import { useGoogleLogin } from "@react-oauth/google";
 
 
 export default function LoginPage(){
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    const googleLogin = useGoogleLogin({})
   
     const navigate = useNavigate();
 
@@ -15,7 +20,7 @@ export default function LoginPage(){
         console.log("log clicked");
         console.log("Email:",email);
         console.log("Password:",password);
-  
+        setIsLoading(true);
 
         try{
             const res = await axios.post(import.meta.env.VITE_BACKEND_URL+"/users/login", {
@@ -52,6 +57,7 @@ export default function LoginPage(){
         } catch (error) {
             console.error("Login failed:", error);
             toast.error(error?.response?.data?.message || "Login failed");
+            setIsLoading(false);
         }
           }
 
@@ -85,6 +91,7 @@ export default function LoginPage(){
                             }
                         } type="password" placeholder="Your Password" className="w-[400px] h-[50px] mb-[20px] rounded-lg border border-accent p-[10px] text-[20px] focus:outline-none focus:ring-2 focus:ring-golden " />
                     <button onClick={login} className="w-[400px] h-[50px] bg-accent text-white font-bold text-[20px] rounded-lg hover:bg-transparent hover:text-accent ">Login</button>
+                    <button onClick={googleLogin} className="w-[400px] mt-[30px] h-[50px] bg-accent text-white font-bold text-[20px] rounded-lg hover:bg-transparent hover:text-accent ">Login With <FaGoogle className="inline ml-2 mb-1 " /></button>
                     <div className="mt-[20px] text-white">
                         <span>Don't have an account? </span>
                         <Link to="/register" className="text-golden font-bold hover:underline">Register</Link>
@@ -93,6 +100,7 @@ export default function LoginPage(){
                 </div>
 
             </div>
+            {isLoading && <Loader />}
         </div>
     )
 }
