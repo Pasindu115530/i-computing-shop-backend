@@ -12,7 +12,34 @@ export default function LoginPage(){
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const googleLogin = useGoogleLogin({})
+    const googleLogin = useGoogleLogin({
+    onSuccess: (response) => {
+        axios.post(import.meta.env.VITE_BACKEND_URL + "/users/google-login", {
+            access_token: response.access_token
+        })
+        .then((res) => {
+            console.log("Google login response:", res.data);
+            toast.success(res.data.message);
+
+            // SAVE TOKEN
+            localStorage.setItem("token", res.data.token);
+
+            setIsLoading(true);
+            navigate("/");
+        })
+        .catch((error) => {
+            console.error("Google login failed:", error);
+            toast.error(error?.response?.data?.message || "Google login failed");
+            setIsLoading(false);
+        });
+    },
+
+    onError: (error) => {
+        toast.error("Google Login Failed");
+        console.log("Google login error:", error);
+    }
+});
+
   
     const navigate = useNavigate();
 
