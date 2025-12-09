@@ -1,5 +1,5 @@
 import express from "express"
-import { createUser, loginUser } from "../controllers/userController.js"
+import { createUser, googleLogin, loginUser } from "../controllers/userController.js"
 import { getCurrentUser } from "../controllers/userController.js"
 import { verifyToken, requireAuth } from "../middleware/auth.js"
 
@@ -14,6 +14,8 @@ userRouter.get("/", verifyToken, (req, res) => {
 	if (!req.user) return res.status(401).json({ message: "Authentication required" });
 	return res.json(req.user);
 })
+
+userRouter.post("/googlelogin",googleLogin)
 
 
 export default userRouter
