@@ -114,5 +114,52 @@ export function isAdmin(req, res, next) {
 export async function googleLogin(req, res) {
     // Implementation for Google login can be added here
     console.log(req.body.token)
-    
+    try{
+        const response = await axios.get(`https://www.googleapis.com/oauth2/v3/userinfo?`,{
+                headers: {
+                    Authorization: `Bearer ${req.body.token}`,
+        },}
+            );
+        const user = await User.findOne({ email: response.data.email });
+        if(user == null){
+            const newUser = new User({
+                email: response.data.email,
+                firstName: response.data.given_name,
+                lastName: response.data.family_name,
+                password: "123",
+                image : response.data.picture,
+            });
+            await newUser.save();
+            res.json({ message: "User registered successfully" });
+
+            const payload = {
+                email: newUser.email,
+                firstName: newUser.firstName,
+                lastName: newUser.lastName,
+                role: newUser.role,
+                isEmailVerified: true,
+                image: newUser.image,
+            };  
+            const token = jwt.sign(payload, process.env.JWT_SECRET, {   
+                expireIn : "150h",
+            });
+            res.json({ message: "Login successful", token ,role : newUser.role});   
+
+        }else{
+            const payload = {
+                email: newUser.email,
+                firstName: newUser.firstName,
+                lastName: newUser.lastName,
+                role: newUser.role,
+                isEmailVerified: true,
+                image: newUser.image,
+            };  
+            const token = jwt.sign(payload, process.env.JWT_SECRET, {
+                expiresIn : "150h",
+            });
+            res.json({ message: "Login successful", token , role : user.role});
+        }     
+    }catch(err){
+        res.status(500).json({ message: "Server error", error: err.message });
+    }
 }
