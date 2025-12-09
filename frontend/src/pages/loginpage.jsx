@@ -14,7 +14,7 @@ export default function LoginPage(){
     const [isLoading, setIsLoading] = useState(false);
     const googleLogin = useGoogleLogin({
     onSuccess: (response) => {
-        axios.post(import.meta.env.VITE_BACKEND_URL + "/users/google-login", {
+        axios.post(import.meta.env.VITE_BACKEND_URL + "/users/googlelogin", {
             access_token: response.access_token
         })
         .then((res) => {
@@ -23,12 +23,17 @@ export default function LoginPage(){
 
             // SAVE TOKEN
             localStorage.setItem("token", res.data.token);
-
+            if(res.data.role === "admin"){
+                navigate("/admin");
+            } else{
+                navigate("/");
+            }
             setIsLoading(true);
-            navigate("/");
+          
         })
         .catch((error) => {
             console.error("Google login failed:", error);
+            console.log("Error response data:", error.response?.data);
             toast.error(error?.response?.data?.message || "Google login failed");
             setIsLoading(false);
         });
