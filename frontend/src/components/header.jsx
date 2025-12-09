@@ -2,6 +2,7 @@ import { HiShoppingCart } from "react-icons/hi";
 import { Link } from "react-router-dom";
 import { LuListCollapse } from "react-icons/lu";
 import { useState } from "react";
+import UserData from "./userData";
 
 export default function Header(){
     const [sideBarOpen , setsideBarOpen] = useState(false);
@@ -21,6 +22,9 @@ export default function Header(){
                 </Link>
                 <Link to="/contact">Contacts
                 </Link>
+            </div>
+            <div className="w-full h-full flex justify-end items-center pr-20">
+                <UserData/>
             </div>
             <Link to="/cart" className="absolute right-8 top-1/2 -translate-y-1/2 text-primary border border-primary px-4 py-2 rounded hover:bg-primary hover:text-accent transition-all duration-200">
                 <HiShoppingCart/>

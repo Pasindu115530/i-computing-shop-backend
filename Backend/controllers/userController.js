@@ -78,6 +78,25 @@ export async function loginUser(req, res) {
 }
 
 // =====================
+// GET CURRENT USER
+// =====================
+export async function getCurrentUser(req, res) {
+    try {
+        // `verifyToken` middleware attaches `req.user` when a valid token is provided
+        if (!req.user) {
+            return res.status(401).json({ message: "Authentication required" });
+        }
+
+        // Return the token payload as the current user info. If you prefer the
+        // complete fresh record from DB, you can query User.findOne({ email: req.user.email })
+        // and exclude the password field.
+        res.json(req.user);
+    } catch (err) {
+        res.status(500).json({ message: "Server error", error: err.message });
+    }
+}
+
+// =====================
 // ADMIN CHECK (MIDDLEWARE)
 // =====================
 export function isAdmin(req, res, next) {
