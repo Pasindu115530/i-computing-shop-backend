@@ -111,7 +111,8 @@ export function isAdmin(req, res, next) {
     next();
 }
 
-export function googleLogin(req, res) {
+export async function googleLogin(req, res) {
     // Implementation for Google login can be added here
-    console.log(req.bodytoken)
+    console.log(req.body.token)
+    
 }
