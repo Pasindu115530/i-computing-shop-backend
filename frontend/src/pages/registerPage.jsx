@@ -2,28 +2,49 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
+import Loader from "../components/loader";
 
 
 export default function RegisterPage(){
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
+    const [isloading , setisLoading] = useState(false);
   
     const navigate = useNavigate();
 
     async function register(){
         console.log("Reigister clicked");
+        if(firstName.trim()=="" ){
+            toast.error("First name is required");
+            return;
+        }
+        if(lastName.trim()=="" ){
+            toast.error("Last name is required");
+            return;
+        }
+        if(email.trim()=="" ){
+            toast.error("Email is required");
+            return;
+        }
+        if(password !== confirmPassword ){
+            toast.error("Passwords do not match");
+            return;
+        }
+
+       setisLoading(true);
         
   
 
         try{
             const res = await axios.post(import.meta.env.VITE_BACKEND_URL+"/users/", {
-                email: email,
-                password: password,
-                firstName: firstName,
-                lastName: lastName,
+                email: email.trim(),
+                password: password.trim(),
+                firstName: firstName.trim(),
+                lastName: lastName.trim(),
             });
             console.log("Register response:", res.data);
             console.log("Token (from response):", res.data.token);
@@ -34,6 +55,7 @@ export default function RegisterPage(){
         } catch (error) {
             console.error("Login failed:", error);
             toast.error(error?.response?.data?.message || "Login failed");
+            setisLoading(false);
         }
           }
 
@@ -76,6 +98,11 @@ export default function RegisterPage(){
                                 setPassword(e.target.value)
                             }
                         } type="password" placeholder="Your Password" className="w-[400px] h-[50px] mb-[20px] rounded-lg border border-accent p-[10px] text-[20px] focus:outline-none focus:ring-2 focus:ring-golden " />
+                    <input onChange={
+                            (e) => {
+                                setConfirmPassword(e.target.value)
+                            }
+                        } type="password" placeholder="Confirm Your Password" className="w-[400px] h-[50px] mb-[20px] rounded-lg border border-accent p-[10px] text-[20px] focus:outline-none focus:ring-2 focus:ring-golden " />    
                     <button onClick={register} className="w-[400px] h-[50px] bg-accent text-white font-bold text-[20px] rounded-lg hover:bg-transparent hover:text-accent ">Register</button>
                     <div className="mt-[20px] text-white">
                         <span>Do you have an account? </span>
@@ -85,6 +112,7 @@ export default function RegisterPage(){
                 </div>
 
             </div>
+            {isloading && <Loader/>}
         </div>
     )
 }
