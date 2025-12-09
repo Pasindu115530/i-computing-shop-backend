@@ -49,11 +49,11 @@ export default function Header() {
 
                             {/* Sidebar Header */}
                             <div className="w-full h-[100px] flex justify-center items-center bg-accent relative">
-                               <img 
-  src="/logo.png" 
-  className="absolute left-[40px] top-0 h-[120px] w-[120px] mr-4 mt-4" 
-  alt="logo"
-/>
+                           <img 
+                            src="/logo.png" 
+                            className="absolute left-[40px] top-0 h-[120px] w-[120px] mr-4 mt-4" 
+                            alt="logo"
+                            />
 
 
                                 {/* Close Button */}
