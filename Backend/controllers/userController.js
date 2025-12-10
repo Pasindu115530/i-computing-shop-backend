@@ -113,54 +113,83 @@ export function isAdmin(req, res, next) {
 }
 
 export async function googleLogin(req, res) {
-    // Implementation for Google login can be added here
-    console.log(req.body.token)
-    try{
-        const response = await axios.get("https://www.googleapis.com/oauth2/v3/userinfo", {
-  headers: {
-    Authorization: `Bearer ${req.body.token}`
-  }
-});
-        const user = await User.findOne({ email: response.data.email });
-        if(user == null){
-            const newUser = new User({
-                email: response.data.email,
-                firstName: response.data.given_name,
-                lastName: response.data.family_name,
-                password: "123",
-                image : response.data.picture,
-            });
-            await newUser.save();
-            res.json({ message: "User registered successfully" });
+    try {
+        // Get access token from frontend
+        const accessToken = req.body.access_token;
 
-            const payload = {
-                email: newUser.email,
-                firstName: newUser.firstName,
-                lastName: newUser.lastName,
-                role: newUser.role,
-                isEmailVerified: true,
-                image: newUser.image,
-            };  
-            const token = jwt.sign(payload, process.env.JWT_SECRET, {   
-                expireIn : "150h",
-            });
-            res.json({ message: "Login successful", token ,role : newUser.role});   
+        if (!accessToken) {
+            return res.status(400).json({ message: "Token missing" });
+        }
 
-        }else{
-            const payload = {
-                email: newUser.email,
-                firstName: newUser.firstName,
-                lastName: newUser.lastName,
-                role: newUser.role,
-                isEmailVerified: true,
-                image: newUser.image,
-            };  
-            const token = jwt.sign(payload, process.env.JWT_SECRET, {
-                expiresIn : "150h",
+        // Fetch Google user info
+        const googleResponse = await axios.get(
+            "https://www.googleapis.com/oauth2/v3/userinfo",
+            {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            }
+        );
+
+        const data = googleResponse.data;
+
+        // Extract names safely (Google may not provide family_name)
+        const firstName =
+            data.given_name ||
+            data.name?.split(" ")[0] ||
+            "Unknown";
+
+        const lastName =
+            data.family_name ||
+            data.name?.split(" ")[1] ||
+            "NA"; // fallback to avoid validation error
+
+        const email = data.email;
+        const image = data.picture;
+
+        // Check if user exists
+        let user = await User.findOne({ email });
+
+        // If not found → create new user
+        if (!user) {
+            user = new User({
+                email: email,
+                firstName: firstName,
+                lastName: lastName,
+                password: "123",   // You can hash this later
+                image: image,
             });
-            res.json({ message: "Login successful", token , role : user.role});
-        }     
-    }catch(err){
-        res.status(500).json({ message: "Server error", error: err.message });
+
+            await user.save();
+        }
+
+        // JWT payload
+        const payload = {
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            role: user.role,
+            isEmailVerified: true,
+            image: user.image,
+        };
+
+        // Generate token
+        const token = jwt.sign(payload, process.env.JWT_SECRET, {
+            expiresIn: "150h",
+        });
+
+        // Successful response
+        res.json({
+            message: "Login successful",
+            token,
+            role: user.role
+        });
+
+    } catch (err) {
+        console.error("Google login error:", err);
+        res.status(500).json({
+            message: "Server error",
+            error: err.message,
+        });
     }
 }
