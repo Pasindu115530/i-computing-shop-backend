@@ -3,8 +3,20 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import axios from "axios";
+import nodemailer from "nodemailer";
 
 dotenv.config();
+
+const transporter = nodemailer.createTransport({
+    service : "gmail.com",
+    host : "smtp.gmail.com",
+    port : 587,
+    secure : false,
+    auth:{
+        user : "pasindu.udana.mendis@gmail.com",
+        pass : process.env.GMAIL_APP_PASSWORD_
+    }
+})
 
 // =====================
 // CREATE USER
