@@ -200,6 +200,33 @@ export async function googleLogin(req, res) {
     }
 }
 
+export async function validateOTPAndUpdatePassword  (req, res) {
+
+    try{
+    const otpCode = req.body.otp;
+    const newPassword = req.body.newPassword;
+    const email = req.body.email;
+
+    const otp = await Otp.findOne({ email: email, otp: otpCode });
+    if (!otp) {
+        return res.status(400).json({ message: "Invalid or expired OTP" });
+    }
+
+    const hashedPassword = bcrypt.hashSync(newPassword, 10);
+    
+    await User.updateOne({email:email},{
+        $set : {password: hashedPassword , isEmailVerified : true}
+    });
+    res.json({
+        message: "Password updated successfully"})
+        }catch(err){
+            res.status(500).json({
+                message: "failed to update",
+                error: err.message,})
+}
+}
+
+
 export async function sendOTP(req, res) {
 
     try{

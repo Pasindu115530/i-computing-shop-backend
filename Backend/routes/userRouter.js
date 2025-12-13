@@ -1,5 +1,5 @@
 import express from "express"
-import { createUser, googleLogin, loginUser, sendOTP } from "../controllers/userController.js"
+import { createUser, googleLogin, loginUser, sendOTP, validateOTPAndUpdatePassword } from "../controllers/userController.js"
 import { getCurrentUser } from "../controllers/userController.js"
 import { verifyToken, requireAuth } from "../middleware/auth.js"
 
@@ -17,6 +17,7 @@ userRouter.get("/", verifyToken, (req, res) => {
 
 userRouter.post("/googlelogin",googleLogin)
 userRouter.get("/send-otp/:email", sendOTP)
+userRouter.post("/validate-otp" , validateOTPAndUpdatePassword)
 
 
 export default userRouter
