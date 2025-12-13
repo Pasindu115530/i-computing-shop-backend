@@ -207,7 +207,7 @@ export async function sendOTP(req, res) {
         return res.status(404).json({ message: "User not found" });
     }
     const message = {
-        from : "pasinduudana12m2@gmail.com",
+        from : "pasindu.udana.mendis@gmail.com",
         to : email,
         subject : "You OTP Code for Password Reset",
         text : `Your OTP code is 123456. It is valid for 10 minutes.`
