@@ -8,16 +8,15 @@ import Otp from "../models/Otp.js";
 
 dotenv.config();
 
-const transporter = nodemailer.createTransport({
-    service : "gmail.com",
-    host : "smtp.gmail.com",
-    port : 587,
-    secure : false,
-    auth:{
-        user : "pasindu.udana.mendis@gmail.com",
-        pass : process.env.GMAIL_APP_PASSWORD_
-    }
-});
+nodemailer.createTransport({
+    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
+    auth: {
+        user: "pasindu.udana.mendis@gmail.com",
+        pass: process.env.GMAIL_APP_PASSWORD
+    }});
 
 export async function createUser(req, res) {
     try {
