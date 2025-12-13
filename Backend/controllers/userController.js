@@ -16,11 +16,8 @@ const transporter = nodemailer.createTransport({
         user : "pasindu.udana.mendis@gmail.com",
         pass : process.env.GMAIL_APP_PASSWORD_
     }
-})
+});
 
-// =====================
-// CREATE USER
-// =====================
 export async function createUser(req, res) {
     try {
         const data = req.body;
@@ -100,9 +97,6 @@ export async function getCurrentUser(req, res) {
             return res.status(401).json({ message: "Authentication required" });
         }
 
-        // Return the token payload as the current user info. If you prefer the
-        // complete fresh record from DB, you can query User.findOne({ email: req.user.email })
-        // and exclude the password field.
         res.json(req.user);
     } catch (err) {
         res.status(500).json({ message: "Server error", error: err.message });
@@ -204,4 +198,33 @@ export async function googleLogin(req, res) {
             error: err.message,
         });
     }
+}
+
+export async function sendOTP(req, res) {
+    const email = req.params.email;
+    const user = await User.findOne({ email: email });
+    if (!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
+    const message = {
+        from : "pasinduudana12m2@gmail.com",
+        to : email,
+        subject : "You OTP Code for Password Reset",
+        text : `Your OTP code is 123456. It is valid for 10 minutes.`
+    }
+
+    transporter.sendMail(message , (err,info) =>{
+        if(err){
+            res.status(500).json({
+                message: "Failed to send OTP",
+                error: err.message
+            })
+        }else{
+            res.json({
+                message:"OTP sent sucessfully"
+            })
+
+        }
+
+    })
 }
