@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import axios from "axios";
 import nodemailer from "nodemailer";
+import Otp from "../models/Otp.js";
 
 dotenv.config();
 
@@ -201,16 +202,30 @@ export async function googleLogin(req, res) {
 }
 
 export async function sendOTP(req, res) {
+
+    try{
     const email = req.params.email;
     const user = await User.findOne({ email: email });
     if (!user) {
         return res.status(404).json({ message: "User not found" });
     }
+    await Otp.deleteMany({
+        email:email
+    })    
+
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    const otpEntry = new Otp({
+        email: email,
+        otp: otpCode 
+
+    })
     const message = {
+        
         from : "pasindu.udana.mendis@gmail.com",
         to : email,
         subject : "You OTP Code for Password Reset",
-        text : `Your OTP code is 123456. It is valid for 10 minutes.`
+        text : `Your OTP code is ${otpCode}. It is valid for 10 minutes.`
     }
 
     transporter.sendMail(message , (err,info) =>{
@@ -227,4 +242,10 @@ export async function sendOTP(req, res) {
         }
 
     })
+    }catch(err){
+        res.status(500).json({
+            message: "Server error",
+            error: err.message
+        })
+    }
 }
