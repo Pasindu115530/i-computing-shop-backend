@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import axios from "axios";
 import nodemailer from "nodemailer";
 import Otp from "../models/Otp.js";
+import { toast } from "react-hot-toast";
 
 dotenv.config();
 
@@ -296,6 +297,10 @@ export async function changeBlockStatus(req, res) {
     try{
     const email = req.body.email;
     const isBlocked = req.body.isBlocked;
+    if(req.user.email === email){
+        return res.status(400).json({ message: "You cannot block/unblock yourself" });
+        toast.error("You cannot block/unblock yourself");
+    }
     const user = await User.findOne({ email: email });
     if (!user) {
         return res.status(404).json({ message: "User not found" });

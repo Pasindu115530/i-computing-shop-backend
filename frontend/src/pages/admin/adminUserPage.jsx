@@ -60,9 +60,9 @@ export default function AdminUserPage() {
                                     <td className="px-4 py-3 text-center">{u.firstName}</td>
                                     <td className="px-4 py-3 text-center">{u.lastName}</td>
                                     <td className="px-4 py-3 text-center">{u.role}</td>
-                                    <td className="px-4 py-3 text-center">{u.status}</td>
+                                    <td className="px-4 py-3 text-center">{u.isBlocked ? "Blocked" : "Active"}</td>
                                     <td className="px-4 py-3 text-center">
-                                        <button onClick={() => {
+                                        <button onClick={async() => {
                                            
                                             axios.put(import.meta.env.VITE_BACKEND_URL + `/users/block/`, {
                                                 email: u.email,
