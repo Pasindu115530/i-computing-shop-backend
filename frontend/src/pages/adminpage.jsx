@@ -10,6 +10,7 @@ import AdminOrderPage from "./admin/adminOrdersPage";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Loader from "../components/loader";
+import AdminUserPage from "./admin/adminUserPage";
 
 
 export default function adminpage(){
@@ -25,7 +26,7 @@ export default function adminpage(){
                 Authorization: `Bearer ${token}`
             },
         }).then((response) => {
-            if (!response.data.isAdmin) {S
+            if (response.data.role !== "admin") {
                 window.location.href = "/";
             }else{
                 setUser(response.data);
@@ -62,7 +63,7 @@ export default function adminpage(){
                         <Route path="/products" element={<AdminProductPage />} />
                         <Route path="/add-items" element={<AdminAddProductPage/>} />
                         <Route path="/update-item" element={<AdminUpdateProductPage />} />
-                        <Route path="/users" element={<h1>Users</h1>} />
+                        <Route path="/users" element={<AdminUserPage />} />
                         <Route path="/reviews" element={<h1>Reviews</h1>} />
                     </Routes>
                 </div>

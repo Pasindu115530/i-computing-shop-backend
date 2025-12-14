@@ -53,6 +53,14 @@ export default function UserData() {
                             >
                                 My Orders
                             </button>
+                            {user.role === "admin" && (
+                                <button
+                                    className="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 text-blue-600"
+                                    onClick={() => navigate("/admin")}
+                                >
+                                    Admin Panel
+                                </button>
+                            )}
                             <button
                                 className="w-full text-left px-3 py-2 rounded-md hover:bg-gray-100 text-red-600"
                                 onClick={handleLogout}
