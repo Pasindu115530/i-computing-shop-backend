@@ -40,30 +40,23 @@ export default function ProductPage() {
                                 value={query}
                                 className="w-1/2 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                 onChange={async (e) => {
-                                    setQuery(e.target.value);
-                                    if( e.target.value.trim() === "" ){
-                                        setLoaded(false);
-                                        await axios.get(import.meta.env.VITE_BACKEND_URL + "/products/")
-                                        .then((response) => {
-                                            setProducts(response.data);
-                                            setLoaded(true);
-                                        })
-                                        .catch((error) => {
-                                            console.error("Error fetching products:", error);
-                                            toast.error("Failed to load products");
-                                        });             
-                                    } else {
-                                        await axios.get(import.meta.env.VITE_BACKEND_URL + "/products/search" + e.target.value)
-                                        .then((response) => {
-                                            setProducts(response.data);
-                                            setLoaded(true);
-                                        })
-                                        .catch((error) => {
-                                            console.error("Error searching products:", error);
-                                            toast.error("Failed to search products");
-                                        });                                 
-                                    }
-                                }}
+  const value = e.target.value;
+  setQuery(value);
+
+  if (value.trim() === "") {
+    const response = await axios.get(
+      import.meta.env.VITE_BACKEND_URL + "/products/"
+    );
+    setProducts(response.data);
+    setLoaded(true);
+  } else {
+    const response = await axios.get(
+      import.meta.env.VITE_BACKEND_URL + "/products/search/" + value
+    );
+    setProducts(response.data);
+    setLoaded(true);
+  }
+}}
                             />
                         </div>
 

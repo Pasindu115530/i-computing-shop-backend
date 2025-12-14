@@ -122,20 +122,24 @@ export function getProductByID(req, res) {
         .catch((error) => next(error));
 }
 
-export async function searchPrdoucts(req,res){
-    const query = req.query.query;
+export async function searchPrdoucts(req, res) {
+  try {
+    const query = req.params.query;
 
-    try{
-        const products = await Product.find({
-            name : { $regex: query, $options: "i" },
-            isAvailable: true
-        });
-        res.json(products);
-        
-    }catch(err){
-        res.status(500).json({
-            message: "Server error",
-            error: err.message,
-        });
-    }
+    const products = await Product.find({
+      $or: [
+        { name: { $regex: query, $options: "i" } },
+        { altNames : { $regex: query, $options: "i" } } ,
+      ],
+      isAvailable: true,
+    });
+
+    res.status(200).json(products);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: "Server error",
+      error: err.message,
+    });
+  }
 }
