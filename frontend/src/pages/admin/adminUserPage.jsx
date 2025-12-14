@@ -60,11 +60,14 @@ export default function AdminUserPage() {
                                     <td className="px-4 py-3 text-center">{u.firstName}</td>
                                     <td className="px-4 py-3 text-center">{u.lastName}</td>
                                     <td className="px-4 py-3 text-center">{u.role}</td>
-                                    <td className="px-4 py-3 text-center">{u.isEmailVerified ? "Verified" : "Not Verified"}</td>
+                                    <td className="px-4 py-3 text-center">{u.status}</td>
                                     <td className="px-4 py-3 text-center">
-                                        <div className="flex items-center justify-center gap-4">
-                                        </div>
+                                        <Link
+                                            to={`/admin/edit-user/${u.userID}`}     
+                                            className="text-blue-500 hover:underline"
+                                        >Edit</Link>
                                     </td>
+                                   
                                 </tr>
                             ))}
                         </tbody>
