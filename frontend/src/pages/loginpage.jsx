@@ -128,6 +128,9 @@ export default function LoginPage(){
                         <span>Don't have an account? </span>
                         <Link to="/register" className="text-golden font-bold hover:underline">Register</Link>
                     </div>
+                    <div className="mt-[10px] text-white">
+                        <Link to="/forgot-password" className="text-golden font-bold hover:underline">Forgot Password?</Link>
+                    </div>    
 
                 </div>
 

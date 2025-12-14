@@ -16,7 +16,7 @@ userRouter.get("/", verifyToken, (req, res) => {
 })
 
 userRouter.post("/googlelogin",googleLogin)
-userRouter.get("/send-otp/:email", sendOTP)
+userRouter.post("/send-otp/:email", sendOTP)
 userRouter.post("/validate-otp" , validateOTPAndUpdatePassword)
 
 

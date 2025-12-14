@@ -8,7 +8,7 @@ import Otp from "../models/Otp.js";
 
 dotenv.config();
 
-nodemailer.createTransport({
+const transporter = nodemailer.createTransport({
     service: "gmail",
     host: "smtp.gmail.com",
     port: 587,
@@ -246,6 +246,8 @@ export async function sendOTP(req, res) {
         otp: otpCode 
 
     })
+    await otpEntry.save();
+    
     const message = {
         
         from : "pasindu.udana.mendis@gmail.com",

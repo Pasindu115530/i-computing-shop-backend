@@ -8,17 +8,20 @@ export default function ForgotPasswordpage() {
 
     const [otpSent , setOtpSent] = useState(false);
     const [loading , setLoading] = useState(false);
+    const [email, setEmail] = useState("");
 
     async function sentOtp(){
         setLoading(true);
         try{
         
-        await axios.post(import.meta.env.VITE_BACKEND_URL + 'users/send-otp/'+email);
+        await axios.post(import.meta.env.VITE_BACKEND_URL + '/users/send-otp/'+email);
         toast.success("OTP sent to your email");
         setLoading(false);
         setOtpSent(true);
         }catch(err){
             console.log(err);
+            toast.error(err.response?.data?.message || "Failed to send OTP");
+            setLoading(false);
         }
 
     }
