@@ -290,3 +290,25 @@ export async function getAllUsers(req, res) {
         res.status(500).json({ message: "Server error", error: err.message });
     }
 }
+
+export async function changeBlockStatus(req, res) {
+
+    try{
+    const email = req.body.email;
+    const isBlocked = req.body.isBlocked;
+    const user = await User.findOne({ email: email });
+    if (!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
+    await User.updateOne({email:email},{
+        $set : {isBlocked : isBlocked}
+    });
+    res.json({
+        message: "User block status updated successfully"})
+        }catch(err){
+            res.status(500).json({
+                message: "failed to update",
+                error: err.message,})
+}
+
+}

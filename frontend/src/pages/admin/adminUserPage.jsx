@@ -31,8 +31,8 @@ export default function AdminUserPage() {
         <div className="w-full p-8 flex justify-center">
             <div className="bg-white shadow-lg rounded-lg overflow-auto mx-auto max-w-6xl">
                 {loaded ? (
-                    <table className="min-w-full table-auto">
-                        <thead className="bg-accent text-white">
+                    <table className="w-full max-w-7xl table-auto border-separate border-spacing-0 rounded-2xl overflow-hidden shadow-2xl bg-white/70">
+                        <thead className="bg-accent text-white sticky top-0 z-10">
                             <tr>
                                 <th className="px-4 py-3 text-center">Image</th>
                                 <th className="px-4 py-3 text-center">Email</th>
@@ -51,21 +51,42 @@ export default function AdminUserPage() {
                                 >
                                     <td className="px-4 py-3 flex items-center justify-center">
                                         <img
-                                            src={u.images?.[0] ?? "/logo.png"}
+                                            src={u.image}
                                             alt={u.firstName}
                                             className="w-14 h-14 object-cover rounded"
                                         />
                                     </td>
-                                    <td className="px-4 py-3 text-center">{u.email}</td>
+                                    <td className="px-4 py-3 text-center">{u.email} {<u className="isVerified">{u.isEmailVerified ? "✔️" : "❌"}</u>}       </td>
                                     <td className="px-4 py-3 text-center">{u.firstName}</td>
                                     <td className="px-4 py-3 text-center">{u.lastName}</td>
                                     <td className="px-4 py-3 text-center">{u.role}</td>
                                     <td className="px-4 py-3 text-center">{u.status}</td>
                                     <td className="px-4 py-3 text-center">
-                                        <Link
-                                            to={`/admin/edit-user/${u.userID}`}     
-                                            className="text-blue-500 hover:underline"
-                                        >Edit</Link>
+                                        <button onClick={() => {
+                                           
+                                            axios.put(import.meta.env.VITE_BACKEND_URL + `/users/block/`, {
+                                                email: u.email,
+                                                isBlocked: !u.isBlocked
+                                            }, {    
+                                                headers: {
+                                                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                                                }
+                                            })
+                                            .then(() => {
+                                                setLoaded(false);
+                                                toast.success("User status updated");
+                                            })
+                                            .catch((error) => {
+                                                console.error("Error updating block status:", error);
+                                                toast.error("Failed to update block status");
+                                            });
+                                        }}
+                                            className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600"
+                                            >
+                                            {
+                                                u.isBlocked ? "Unblock" : "Block"
+                                            }
+                                            </button>
                                     </td>
                                    
                                 </tr>
