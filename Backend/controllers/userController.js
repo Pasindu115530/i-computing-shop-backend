@@ -277,3 +277,15 @@ export async function sendOTP(req, res) {
         })
     }
 }
+
+export async function getAllUsers(req, res) {
+    if (req.user.role !== "admin") {
+        return res.status(403).json({ message: "Admin access only" });
+    }
+    try {
+        const users = await User.find();
+        res.json(users);
+    } catch (err) {
+        res.status(500).json({ message: "Server error", error: err.message });
+    }
+}
