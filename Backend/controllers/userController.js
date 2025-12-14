@@ -5,7 +5,7 @@ import dotenv from "dotenv";
 import axios from "axios";
 import nodemailer from "nodemailer";
 import Otp from "../models/Otp.js";
-import { toast } from "react-hot-toast";
+
 
 dotenv.config();
 
@@ -59,6 +59,10 @@ export async function loginUser(req, res) {
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
+        if(user.isBlocked){
+            return  res.status(403).json({ message: "Your account has been blocked. Please contact support." });
+                  
+        }   
 
         const isPasswordCorrect = bcrypt.compareSync(password, user.password);
         if (!isPasswordCorrect) {
@@ -299,7 +303,7 @@ export async function changeBlockStatus(req, res) {
     const isBlocked = req.body.isBlocked;
     if(req.user.email === email){
         return res.status(400).json({ message: "You cannot block/unblock yourself" });
-        toast.error("You cannot block/unblock yourself");
+
     }
     const user = await User.findOne({ email: email });
     if (!user) {

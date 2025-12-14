@@ -18,8 +18,8 @@ userRouter.get("/", verifyToken, (req, res) => {
 userRouter.post("/googlelogin",googleLogin)
 userRouter.post("/send-otp/:email", sendOTP)
 userRouter.post("/validate-otp" , validateOTPAndUpdatePassword)
-userRouter.get("/all", getAllUsers)
-userRouter.put("/block", changeBlockStatus)
+userRouter.get("/all", verifyToken, getAllUsers)
+userRouter.put("/block", verifyToken, changeBlockStatus)
 
 
 export default userRouter
