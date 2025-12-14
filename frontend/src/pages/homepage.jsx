@@ -7,6 +7,7 @@ import Checkout from "./checkOut";
 import OrderPage from "./ordersPage";
 import HomeContent from "./homecontext";
 import Contact from "./contact";
+import About from "./about";
 
 export default function homepage(){
     return(
@@ -16,7 +17,7 @@ export default function homepage(){
                 <Routes>
                     <Route path="/" element={<HomeContent />} />
                     <Route path="/products" element={<ProductPage/>}/>
-                    <Route path="/about" element={<h1>About Page</h1>}/>
+                    <Route path="/about" element={<About />}/>
                     <Route path="/contact" element={<Contact />}/>
                     <Route path="/overview/:productID" element = {<ProductOverview />}/>
                     <Route path="/cart" element={<Cart />} />
