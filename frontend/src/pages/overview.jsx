@@ -50,6 +50,11 @@ export default function ProductOverview() {
                             <p className="text-lg font-medium text-indigo-600 mt-2">
                                 {product.category}
                             </p>
+                            {product.altNames && product.altNames.length > 0 && (
+                                <h3 className="text-md text-gray-600 mt-1">
+                                    Also known as: {product.altNames.join(" || ")}
+                                </h3>
+                            )}
                             <p className="text-gray-700 leading-relaxed flex-1 bg-white p-4 mt-10 rounded-lg shadow-sm">
                             {product.description}
                         </p>

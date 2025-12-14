@@ -121,3 +121,21 @@ export function getProductByID(req, res) {
         })
         .catch((error) => next(error));
 }
+
+export async function searchPrdoucts(req,res){
+    const query = req.query.query;
+
+    try{
+        const products = await Product.find({
+            name : { $regex: query, $options: "i" },
+            isAvailable: true
+        });
+        res.json(products);
+        
+    }catch(err){
+        res.status(500).json({
+            message: "Server error",
+            error: err.message,
+        });
+    }
+}
