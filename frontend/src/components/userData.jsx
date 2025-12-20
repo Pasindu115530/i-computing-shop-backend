@@ -27,6 +27,8 @@ export default function UserData() {
     const handleLogout = () => {
         localStorage.removeItem("token");
         navigate("/login");
+        localStorage.setItem("cart", JSON.stringify([]));
+
     };
 
     return (
