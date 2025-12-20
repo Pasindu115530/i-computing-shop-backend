@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShoppingCart, Menu, X, Search, User } from "lucide-react";
+import { ShoppingCart, Menu, X, Search } from "lucide-react";
 import UserData from "./userData"; // Your existing User component
+import { getCartItemCount } from "../lib/cart";
 
 export default function Header() {
     const [sideBarOpen, setSideBarOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
+    const [cartCount, setCartCount] = useState(0);
     const location = useLocation();
 
     // Detect scroll to change header style
@@ -16,6 +18,22 @@ export default function Header() {
         };
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
+    // Keep cart badge in sync with localStorage changes
+    useEffect(() => {
+        const syncCartCount = () => setCartCount(getCartItemCount());
+        syncCartCount();
+
+        window.addEventListener("storage", syncCartCount);
+        window.addEventListener("cartUpdated", syncCartCount);
+        window.addEventListener("focus", syncCartCount);
+
+        return () => {
+            window.removeEventListener("storage", syncCartCount);
+            window.removeEventListener("cartUpdated", syncCartCount);
+            window.removeEventListener("focus", syncCartCount);
+        };
     }, []);
 
     // Active Link Style Helper
@@ -87,7 +105,7 @@ export default function Header() {
                             </div>
                             {/* Badge */}
                             <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold h-5 w-5 flex items-center justify-center rounded-full border-2 border-white">
-                                2
+                                    {cartCount > 99 ? "99+" : cartCount}
                             </span>
                         </Link>
 
