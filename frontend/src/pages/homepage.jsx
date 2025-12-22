@@ -8,6 +8,7 @@ import OrderPage from "./ordersPage";
 import HomeContent from "./homecontext";
 import Contact from "./contact";
 import About from "./about";
+import Footer from "../components/footer";
 
 export default function homepage(){
     return(
@@ -26,6 +27,7 @@ export default function homepage(){
                     <Route path="/orders" element={<OrderPage />} />
                 </Routes>
             </div>
+            <Footer/>
 
         </div>
     )
