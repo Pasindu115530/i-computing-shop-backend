@@ -21,8 +21,17 @@ export default function LoginPage(){
             console.log("Google login response:", res.data);
             toast.success(res.data.message);
 
-            // SAVE TOKEN
+            // SAVE TOKEN AND USER
             localStorage.setItem("token", res.data.token);
+            
+            // Decode token to get user info
+            try {
+                const payload = JSON.parse(atob(res.data.token.split('.')[1]));
+                localStorage.setItem("user", JSON.stringify(payload));
+            } catch (e) {
+                console.warn("Failed to decode token:", e);
+            }
+            
             if(res.data.role === "admin"){
                 navigate("/admin");
             } else{
@@ -75,6 +84,8 @@ export default function LoginPage(){
                 try {
                     const payload = JSON.parse(atob(token.split('.')[1]));
                     role = payload.role;
+                    // Save user object to localStorage
+                    localStorage.setItem("user", JSON.stringify(payload));
                 } catch (e) {
                     console.warn("Failed to decode token payload:", e);
                 }

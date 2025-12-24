@@ -14,11 +14,33 @@ export default function ViewOrderInfo(props) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [status, setStatus] = useState(order?.status || "Pending");
     const [note, setNote] = useState(order?.notes || "");
+    const [isAdmin, setIsAdmin] = useState(false);
     
-    // Get user role from localStorage
-    const userStr = localStorage.getItem("user");
-    const user = userStr ? JSON.parse(userStr) : null;
-    const isAdmin = user?.role === "admin";
+    // Get user role from localStorage or API
+    useEffect(() => {
+        const userStr = localStorage.getItem("user");
+        if (userStr) {
+            try {
+                const user = JSON.parse(userStr);
+                setIsAdmin(user?.role === "admin");
+            } catch (e) {
+                console.error("Failed to parse user:", e);
+            }
+        } else {
+            // Fallback: fetch from API
+            const token = localStorage.getItem("token");
+            if (token) {
+                axios.get(import.meta.env.VITE_BACKEND_URL + "/users/", {
+                    headers: { Authorization: `Bearer ${token}` }
+                })
+                .then((res) => {
+                    setIsAdmin(res.data?.role === "admin");
+                    localStorage.setItem("user", JSON.stringify(res.data));
+                })
+                .catch(() => setIsAdmin(false));
+            }
+        }
+    }, []);
 
     /* ✅ Sync values when modal opens */
     useEffect(() => {
