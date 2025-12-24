@@ -321,3 +321,48 @@ export async function changeBlockStatus(req, res) {
 }
 
 }
+
+export async function sendMail(req, res) {
+    try {
+        const { firstName, lastName, email, phone, message } = req.body;
+
+        const mailOptions = {
+            from: `"${firstName} ${lastName}" <${email}>`, // shows sender name
+            to: "pasindu.udana.mendis@gmail.com",         // your Gmail
+            subject: "New Contact Form Submission",
+            html: `
+                <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+                    <h2 style="color: #1a73e8;">New Message from Contact Form</h2>
+                    <p><strong>Name:</strong> ${firstName} ${lastName}</p>
+                    <p><strong>Email:</strong> ${email}</p>
+                    <p><strong>Phone:</strong> ${phone || "N/A"}</p>
+                    <p><strong>Message:</strong></p>
+                    <p style="padding: 10px; background-color: #f0f0f0; border-radius: 5px;">
+                        ${message}
+                    </p>
+                    <hr />
+                    <p style="font-size: 12px; color: #777;">This message was sent from your website contact form.</p>
+                </div>
+            `,
+        };
+
+        transporter.sendMail(mailOptions, (err, info) => {
+            if (err) {
+                console.error("Mail sending error:", err);
+                return res.status(500).json({
+                    message: "Failed to send mail",
+                    error: err.message
+                });
+            }
+
+            res.json({ message: "Mail sent successfully" });
+        });
+
+    } catch (err) {
+        console.error("Server error:", err);
+        res.status(500).json({
+            message: "Server error",
+            error: err.message
+        });
+    }
+}
