@@ -234,55 +234,72 @@ export async function validateOTPAndUpdatePassword  (req, res) {
 
 
 export async function sendOTP(req, res) {
-
-    try{
+  try {
     const email = req.params.email;
     const user = await User.findOne({ email: email });
     if (!user) {
-        return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "User not found" });
     }
-    await Otp.deleteMany({
-        email:email
-    })    
 
+    // Remove old OTPs for the user
+    await Otp.deleteMany({ email: email });
+
+    // Generate 6-digit OTP
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
 
+    // Save OTP to DB
     const otpEntry = new Otp({
-        email: email,
-        otp: otpCode 
-
-    })
+      email: email,
+      otp: otpCode
+    });
     await otpEntry.save();
-    
-    const message = {
-        
-        from : "pasindu.udana.mendis@gmail.com",
-        to : email,
-        subject : "You OTP Code for Password Reset",
-        text : `Your OTP code is ${otpCode}. It is valid for 10 minutes.`
-    }
 
-    transporter.sendMail(message , (err,info) =>{
-        if(err){
-            res.status(500).json({
-                message: "Failed to send OTP",
-                error: err.message
-            })
-        }else{
-            res.json({
-                message:"OTP sent sucessfully"
-            })
+    // HTML email design
+    const htmlMessage = `
+      <div style="font-family: Arial, sans-serif; color: #333; padding: 20px; max-width: 600px; margin: auto; border: 1px solid #e0e0e0; border-radius: 8px;">
+        <h2 style="color: #1a73e8; text-align: center;">Your OTP Code</h2>
+        <p>Hello ${user.firstName || ""},</p>
+        <p>We received a request to reset your password. Please use the OTP below to proceed:</p>
+        <div style="text-align: center; margin: 30px 0;">
+          <span style="display: inline-block; font-size: 24px; font-weight: bold; letter-spacing: 4px; padding: 10px 20px; background-color: #f0f4ff; border-radius: 8px; color: #1a73e8;">
+            ${otpCode}
+          </span>
+        </div>
+        <p>This OTP is valid for <strong>10 minutes</strong>. Please do not share it with anyone.</p>
+        <hr style="margin: 20px 0; border: none; border-top: 1px solid #e0e0e0;">
+        <p style="font-size: 12px; color: #777;">If you did not request a password reset, please ignore this email.</p>
+      </div>
+    `;
 
-        }
-
-    })
-    }catch(err){
-        res.status(500).json({
-            message: "Server error",
+    // Send email
+    transporter.sendMail(
+      {
+        from: "pasindu.udana.mendis@gmail.com",
+        to: email,
+        subject: "Your OTP Code for Password Reset",
+        html: htmlMessage
+      },
+      (err, info) => {
+        if (err) {
+          console.error("Error sending OTP email:", err);
+          res.status(500).json({
+            message: "Failed to send OTP",
             error: err.message
-        })
-    }
+          });
+        } else {
+          res.json({ message: "OTP sent successfully" });
+        }
+      }
+    );
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: "Server error",
+      error: err.message
+    });
+  }
 }
+
 
 export async function getAllUsers(req, res) {
     if (req.user.role !== "admin") {
