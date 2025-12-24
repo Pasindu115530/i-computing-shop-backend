@@ -82,7 +82,7 @@ export default function OrderPage() {
                                     </td>
                                     <td className="px-4 py-4 text-right font-medium">${p.total}</td>
                                     <td className="px-4 py-4 text-center">
-                                        <ViewOrderCustomerInfo />
+                                        <ViewOrderCustomerInfo order={p} />
                                     </td>
                                 </tr>
                             ))}

@@ -2,8 +2,8 @@ import { useState } from "react";
 import { addCart, getCart, getCartTotal } from "../lib/cart";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa6";
-import axios from "axios";
 import toast from "react-hot-toast";
+import axios from "axios";
 
 export default function Checkout() {
     const location = useLocation();
@@ -37,41 +37,47 @@ export default function Checkout() {
             return;
         }
 
-        const orderItems = cart.map(item => ({
-            productID: item.productID,
-            quantity: item.quantity
-        }));
-
         try {
             setLoading(true);
 
-            const response = await axios.post(
-                import.meta.env.VITE_BACKEND_URL + "/orders",
-                {
-                    name: name || undefined, // backend will fill from user if undefined
-                    address,
-                    phonenumber: phoneNumber,
-                    items: orderItems,
-                    notes: note
-                },
+            const token = localStorage.getItem("token");
+            const payload = {
+                items: cart.map((i) => ({
+                    productID: i.productID,
+                    quantity: safe(i.quantity),
+                })),
+                name: name || undefined,
+                address: address,
+                phonenumber: phoneNumber,
+                note: note || undefined,
+            };
+
+            const res = await axios.post(
+                import.meta.env.VITE_BACKEND_URL + "/orders/",
+                payload,
                 {
                     headers: {
-                        "Authorization": `Bearer ${token}`
-                    }
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
                 }
             );
 
-            toast.success("Order placed successfully!");
-            localStorage.removeItem("cart");
-            setCart([]);
-            setNote("");
-            navigate("/orders");
+            if (res.status >= 200 && res.status < 300) {
+                toast.success("Order placed successfully!");
+                localStorage.removeItem("cart");
+                setCart([]);
+                setNote("");
+                navigate("/orders");
+            }
+
         } catch (error) {
             console.error(error);
-            if (error.response && error.response.data && error.response.data.message) {
-                toast.error(error.response.data.message);
+            if (error?.response?.status === 401) {
+                toast.error("Session expired. Please log in again.");
+                navigate("/login");
             } else {
-                toast.error("Failed to place order. Please try again.");
+                toast.error(error?.response?.data?.message || "Failed to place order. Please try again.");
             }
         } finally {
             setLoading(false);
@@ -89,66 +95,88 @@ export default function Checkout() {
                 {/* Cart Items */}
                 <div className="col-span-12 lg:col-span-8 flex flex-col gap-4">
                     {cart.map((item) => {
-                        const price = safe(item?.price);
-                        const qty = safe(item?.quantity);
+                        const price = safe(item.price);
+                        const qty = safe(item.quantity);
 
                         return (
                             <div
                                 key={item.productID}
-                                className="w-full rounded-xl overflow-hidden shadow-sm bg-white flex flex-col md:flex-row gap-4 p-4 items-start md:items-center"
+                                className="w-full rounded-xl shadow-sm bg-white 
+                                           flex flex-col md:flex-row gap-4 p-4 items-start md:items-center"
                             >
                                 <img
                                     src={item.image}
                                     alt={item.name}
                                     className="w-24 h-20 md:w-36 md:h-28 object-cover rounded-md"
                                 />
-                                <div className="flex-1 flex flex-col justify-center">
+
+                                <div className="flex-1">
                                     <h3 className="text-xl font-semibold text-gray-800">
-                                        {item.name.length > 50 ? item.name.substring(0, 50) + "..." : item.name}
+                                        {item.name.length > 50
+                                            ? item.name.substring(0, 50) + "..."
+                                            : item.name}
                                     </h3>
-                                    <div className="mt-1 flex items-center gap-3">
-                                        <span className="text-lg text-accent font-semibold">{formatCurrency(price)}</span>
+                                    <div className="mt-1 text-lg font-semibold text-accent">
+                                        {formatCurrency(price)}
                                     </div>
-                                    <div className="text-xs text-gray-500 mt-2">SKU: {item.productID}</div>
+                                    <div className="text-xs text-gray-500 mt-2">
+                                        SKU: {item.productID}
+                                    </div>
                                 </div>
 
-                                <div className="flex flex-col items-center gap-2 ml-auto md:ml-0">
+                                <div className="flex flex-col items-center gap-2">
                                     <div className="flex flex-col items-center bg-gray-100 rounded-md p-2">
                                         <button
-                                            onClick={() => { addCart(item, 1); setCart(getCart()); }}
-                                            className="p-1 rounded hover:bg-gray-200"
+                                            onClick={() => {
+                                                addCart(item, 1);
+                                                setCart(getCart());
+                                            }}
+                                            className="p-1 hover:bg-gray-200 rounded"
                                         >
-                                            <FaChevronUp className="w-5 h-5 text-accent" />
+                                            <FaChevronUp />
                                         </button>
+
                                         <span className="text-lg font-medium">{qty}</span>
+
                                         <button
-                                            onClick={() => { addCart(item, -1); setCart(getCart()); }}
-                                            className="p-1 rounded hover:bg-gray-200"
+                                            onClick={() => {
+                                                addCart(item, -1);
+                                                setCart(getCart());
+                                            }}
+                                            className="p-1 hover:bg-gray-200 rounded"
                                         >
-                                            <FaChevronDown className="w-5 h-5 text-accent" />
+                                            <FaChevronDown />
                                         </button>
                                     </div>
-                                    <div className="text-sm font-semibold">{formatCurrency(price * qty)}</div>
+
+                                    <div className="text-sm font-semibold">
+                                        {formatCurrency(price * qty)}
+                                    </div>
                                 </div>
                             </div>
                         );
                     })}
                 </div>
 
-                {/* Order Summary & Form */}
-                <aside className="col-span-12 lg:col-span-4 bg-white rounded-lg shadow-md p-6 flex flex-col gap-4 lg:sticky lg:top-24">
+                {/* Order Summary */}
+                <aside className="col-span-12 lg:col-span-4 bg-white rounded-lg shadow-md p-6 flex flex-col gap-4">
                     <h3 className="text-lg font-semibold">Order Summary</h3>
+
                     <div className="flex justify-between text-gray-600">
                         <span>Subtotal</span>
-                        <span className="font-medium">{formatCurrency(getCartTotal())}</span>
+                        <span>{formatCurrency(getCartTotal())}</span>
                     </div>
+
                     <div className="flex justify-between text-gray-600">
                         <span>Shipping</span>
-                        <span className="font-medium">Free</span>
+                        <span>Free</span>
                     </div>
-                    <div className="border-t mt-2 pt-3 flex justify-between items-center">
-                        <span className="text-lg font-semibold">Total</span>
-                        <span className="text-xl font-bold text-accent">{formatCurrency(getCartTotal())}</span>
+
+                    <div className="border-t pt-3 flex justify-between font-bold">
+                        <span>Total</span>
+                        <span className="text-accent">
+                            {formatCurrency(getCartTotal())}
+                        </span>
                     </div>
 
                     <input
@@ -158,38 +186,44 @@ export default function Checkout() {
                         onChange={(e) => setName(e.target.value)}
                         className="w-full px-3 py-2 border rounded-md"
                     />
+
                     <input
                         type="text"
                         placeholder="Address"
                         value={address}
                         onChange={(e) => setAddress(e.target.value)}
-                        className="w-full mt-2 px-3 py-2 border rounded-md"
+                        className="w-full px-3 py-2 border rounded-md"
                     />
+
                     <input
                         type="text"
                         placeholder="Phone Number"
                         value={phoneNumber}
                         onChange={(e) => setPhoneNumber(e.target.value)}
-                        className="w-full mt-2 px-3 py-2 border rounded-md"
+                        className="w-full px-3 py-2 border rounded-md"
                     />
 
-                        <textarea
-                            placeholder="Add a note for the order (optional)"
-                            value={note}
-                            onChange={(e) => setNote(e.target.value)}
-                            className="w-full mt-2 px-3 py-2 border rounded-md"
-                            rows={3}
-                        />
+                    <textarea
+                        placeholder="Add a note (optional)"
+                        value={note}
+                        onChange={(e) => setNote(e.target.value)}
+                        className="w-full px-3 py-2 border rounded-md"
+                        rows={3}
+                    />
 
                     <button
                         onClick={submitOrder}
                         disabled={loading}
-                        className="mt-2 w-full px-4 py-3 bg-accent text-white rounded-md hover:bg-accent/90 disabled:opacity-60"
+                        className="w-full py-3 bg-accent text-white rounded-md 
+                                   disabled:opacity-60"
                     >
                         {loading ? "Placing Order..." : "Order Now"}
                     </button>
 
-                    <Link to="/cart" className="mt-1 block text-center px-4 py-2 border rounded-md text-gray-700">
+                    <Link
+                        to="/cart"
+                        className="block text-center py-2 border rounded-md"
+                    >
                         Back to Cart
                     </Link>
                 </aside>
