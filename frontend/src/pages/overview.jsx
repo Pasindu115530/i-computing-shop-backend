@@ -1,5 +1,5 @@
 import axios from "axios";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import Loader from "../components/loader";
@@ -27,73 +27,114 @@ export default function ProductOverview() {
 
     return (
         <>
+            {/* 🔄 Loader */}
             {status === "loading" && <Loader />}
 
+            {/* ❌ Error */}
             {status === "error" && (
                 <h1 className="text-center text-red-600 mt-10 text-2xl font-semibold">
                     Error Loading Product
                 </h1>
             )}
 
+            {/* ✅ Success */}
             {status === "success" && product && (
-                <div className="w-full  min-h-[calc(100vh-100px)] flex lg:flex-row flex-col bg-red-500 p-6">
-                    <div className="lg:w-1/2 w-full bg- h-full flex justify-center items-center bg-white rounded-xl shadow p-6">
+                <div className="w-full min-h-[calc(100vh-100px)] 
+                                bg-blue-50 p-6 flex flex-col lg:flex-row gap-6">
+
+                    {/* 🖼 Image Section */}
+                    <div className="lg:w-1/2 w-full bg-white rounded-2xl 
+                                    shadow-lg p-6 flex justify-center items-center 
+                                    transition-transform duration-300 hover:scale-[1.01]">
                         <ImageSlider images={product.images || []} />
                     </div>
 
-                    <div className="lg:w-1/2 w-full  p-10 lg:flex flex-col gap-6">
+                    {/* 📄 Product Details */}
+                    <div className="lg:w-1/2 w-full bg-white rounded-2xl 
+                                    shadow-lg p-8 flex flex-col gap-6">
+
+                        {/* Title */}
                         <div>
-                            <h1 className="text-4xl font-bold text-gray-900">{product.name}</h1>
+                            <h1 className="text-4xl font-bold text-gray-900">
+                                {product.name}
+                            </h1>
+
                             <p className="text-sm text-gray-500 mt-1">
                                 Product ID: {product.productID}
                             </p>
-                            <p className="text-lg font-medium text-indigo-600 mt-2">
+
+                            <span className="inline-block mt-2 px-3 py-1 
+                                             rounded-full bg-blue-100 
+                                             text-blue-600 text-sm font-medium">
                                 {product.category}
-                            </p>
+                            </span>
+
                             {product.altNames && product.altNames.length > 0 && (
-                                <h3 className="text-md text-gray-600 mt-1">
-                                    Also known as: {product.altNames.join(" || ")}
-                                </h3>
+                                <p className="text-sm text-gray-600 mt-2">
+                                    Also known as: {product.altNames.join(" | ")}
+                                </p>
                             )}
-                            <p className="text-gray-700 leading-relaxed flex-1 bg-white p-4 mt-10 rounded-lg shadow-sm">
-                            {product.description}
-                        </p>
                         </div>
 
-                        
+                        {/* Description */}
+                        <div className="bg-blue-50 p-5 rounded-lg 
+                                        text-gray-700 leading-relaxed shadow-sm">
+                            {product.description}
+                        </div>
 
-                        {/* Price Section */}
-                        <div className="w-full mt-2">
+                        {/* 💰 Price */}
+                        <div className="flex items-center gap-4">
                             {product.labelledPrice && product.labelledPrice > product.price && (
-                                <span className="text-xl text-gray-400 line-through mr-4">
+                                <span className="text-xl text-gray-400 line-through">
                                     ${product.labelledPrice.toFixed(2)}
                                 </span>
                             )}
-                            <span className="text-4xl font-bold text-green-600">
+                            <span className="text-4xl font-bold text-blue-600">
                                 ${product.price.toFixed(2)}
                             </span>
                         </div>
 
-                        {/* Buttons */}
-                        <div className="w-full flex gap-4 mt-6">
-                            <button onClick={()=>{
-                                addCart(product,1);
-                                navigate('/cart');
-                            }} className="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-3 rounded-lg text-lg font-semibold shadow-md transition-all duration-200">
+                        {/* 🔘 Buttons */}
+                        <div className="flex flex-col sm:flex-row gap-4 mt-4">
+
+                            {/* Add to Cart */}
+                            <button
+                                onClick={() => {
+                                    addCart(product, 1);
+                                    navigate("/cart");
+                                }}
+                                className="flex-1 bg-gradient-to-r 
+                                           from-blue-600 to-indigo-600 
+                                           hover:from-blue-700 hover:to-indigo-700 
+                                           text-white py-3 rounded-xl 
+                                           text-lg font-semibold shadow-md 
+                                           transition-all duration-300 
+                                           hover:-translate-y-1"
+                            >
                                 Add to Cart
                             </button>
 
-                            <button onClick={()=>{
-                                navigate('/checkout', {state: [{
-                                    productID: product.productID,
-                                    name: product.name,
-                                    price: product.price,
-                                    labelledPrice: product.labelledPrice,
-                                    quantity: product.quantity || 1,
-                                    image: product.images[0]
-                                }]});
-                                console.log(getCart())
-                            }} className="flex-1 bg-white border border-gray-300 hover:bg-gray-100 text-gray-900 py-3 rounded-lg text-lg font-semibold shadow-sm transition-all duration-200">
+                            {/* Buy Now */}
+                            <button
+                                onClick={() => {
+                                    navigate("/checkout", {
+                                        state: [{
+                                            productID: product.productID,
+                                            name: product.name,
+                                            price: product.price,
+                                            labelledPrice: product.labelledPrice,
+                                            quantity: product.quantity || 1,
+                                            image: product.images[0],
+                                        }],
+                                    });
+                                    console.log(getCart());
+                                }}
+                                className="flex-1 bg-white border border-blue-300 
+                                           hover:bg-blue-50 text-blue-700 
+                                           py-3 rounded-xl text-lg font-semibold 
+                                           shadow-sm transition-all duration-300 
+                                           hover:-translate-y-1"
+                            >
                                 Buy Now
                             </button>
                         </div>
