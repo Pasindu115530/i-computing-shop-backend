@@ -1,10 +1,24 @@
-import React from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Monitor, Laptop, Cpu, Headphones, ArrowRight, ShieldCheck, Truck, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 
+// Assuming you have AuthContext for logged-in user
+// import { AuthContext } from '../context/AuthContext';
+
 export default function HomeContent() {
   const navigate = useNavigate();
+  // const { currentUser } = useContext(AuthContext); // your logged-in user
+  const currentUser = { name: 'Pasindu Udana' }; // Mock logged-in user for demo
+
+  const [reviews, setReviews] = useState([
+    { id: 1, name: "John Doe", review: "Amazing products! The MacBook Pro M2 I bought is perfect.", rating: 5 },
+    { id: 2, name: "Sarah Lee", review: "Fast delivery and excellent customer service.", rating: 4 },
+    { id: 3, name: "Ali Khan", review: "Great selection of accessories and audio gear.", rating: 5 },
+  ]);
+
+  const [newReview, setNewReview] = useState('');
+  const [newRating, setNewRating] = useState(5);
 
   // Animation Variants
   const fadeInUp = {
@@ -20,17 +34,29 @@ export default function HomeContent() {
     }
   };
 
+  const handleSubmitReview = () => {
+    if (!newReview) return;
+    const reviewObj = {
+      id: Date.now(),
+      name: currentUser.name,
+      review: newReview,
+      rating: newRating
+    };
+    setReviews([reviewObj, ...reviews]);
+    setNewReview('');
+    setNewRating(5);
+  };
+
   return (
     <div className="w-full flex flex-col bg-slate-50 overflow-x-hidden pt-[20px]">
-      
-      {/* 1. HERO SECTION */}
+
+      {/* HERO SECTION */}
       <div className="w-full bg-gradient-to-r from-blue-700 to-blue-900 text-white py-20 px-6 md:px-12 relative overflow-hidden mb-10">
         <motion.div 
           animate={{ scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }}
           transition={{ duration: 20, repeat: Infinity, repeatType: "mirror" }}
           className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"
         />
-
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-10 relative z-10">
           <motion.div 
             initial={{ opacity: 0, x: -50 }}
@@ -56,7 +82,6 @@ export default function HomeContent() {
               Browse Products <ArrowRight size={20} />
             </motion.button>
           </motion.div>
-
           <motion.div 
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
@@ -74,7 +99,7 @@ export default function HomeContent() {
         </div>
       </div>
 
-      {/* 2. CATEGORIES */}
+      {/* CATEGORIES */}
       <div className="max-w-7xl mx-auto py-10 px-6 w-full">
         <motion.h2 
           variants={fadeInUp}
@@ -85,7 +110,6 @@ export default function HomeContent() {
         >
           Browse by Category
         </motion.h2>
-
         <motion.div 
           variants={staggerContainer}
           initial="hidden"
@@ -100,54 +124,67 @@ export default function HomeContent() {
         </motion.div>
       </div>
 
-      {/* 3. BEST SELLERS (Styled like your ProductCard) */}
+      {/* REVIEWS */}
       <div className="bg-white py-20 px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-end mb-10">
-            <div>
-              <h2 className="text-3xl font-bold text-slate-800">Trending Now</h2>
-              <p className="text-slate-500 mt-2">Our most popular picks this week.</p>
-            </div>
-            <button onClick={() => navigate('/products')} className="text-blue-600 font-semibold hover:text-blue-800 hidden md:block">
-              View All &rarr;
-            </button>
-          </div>
+          <motion.h2
+            variants={fadeInUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="text-3xl font-bold text-slate-800 mb-10 text-center"
+          >
+            What Our Customers Say
+          </motion.h2>
 
-          {/* MOCK PRODUCTS - REPLICATING YOUR CARD STYLE */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            <HomeProductCard 
-              id="1"
-              title="MacBook Pro M2" 
-              category="Laptops"
-              price={2500.00}
-              image="https://images.unsplash.com/photo-1517336714731-489689fd1ca4?auto=format&fit=crop&w=500&q=60"
-            />
-            <HomeProductCard 
-              id="2"
-              title="RTX 4090 Gaming PC" 
-              category="Desktops"
-              price={4500.00}
-              image="https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=500&q=60"
-            />
-            <HomeProductCard 
-              id="3"
-              title="Sony WH-1000XM5" 
-              category="Audio"
-              price={350.00}
-              image="https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?auto=format&fit=crop&w=500&q=60"
-            />
-             <HomeProductCard 
-              id="4"
-              title="Keychron K2" 
-              category="Accessories"
-              price={120.00}
-              image="https://images.unsplash.com/photo-1595225476474-87563907a212?auto=format&fit=crop&w=500&q=60"
-            />
-          </div>
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-10"
+          >
+            {reviews.map((r) => (
+              <ReviewCard key={r.id} {...r} />
+            ))}
+          </motion.div>
+
+          {/* SUBMIT REVIEW - Only for logged-in users */}
+          {currentUser ? (
+            <div className="max-w-3xl mx-auto bg-blue-50 p-6 rounded-2xl shadow-md">
+              <h3 className="font-bold text-xl text-slate-800 mb-4">Leave a Review</h3>
+              <textarea
+                value={newReview}
+                onChange={(e) => setNewReview(e.target.value)}
+                placeholder="Write your review here..."
+                className="w-full p-4 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-400 mb-4"
+              />
+              <div className="flex items-center gap-4 mb-4">
+                <label className="font-medium text-slate-700">Rating:</label>
+                <select
+                  value={newRating}
+                  onChange={(e) => setNewRating(Number(e.target.value))}
+                  className="border border-slate-300 rounded-lg p-2"
+                >
+                  {[5, 4, 3, 2, 1].map((n) => (
+                    <option key={n} value={n}>{n} Stars</option>
+                  ))}
+                </select>
+              </div>
+              <button
+                onClick={handleSubmitReview}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition-colors"
+              >
+                Submit Review
+              </button>
+            </div>
+          ) : (
+            <p className="text-center text-slate-600 italic">Please log in to leave a review.</p>
+          )}
         </div>
       </div>
 
-      {/* 4. FEATURES */}
+      {/* FEATURES */}
       <div className="bg-blue-50 py-20 px-6">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
           <Feature icon={<ShieldCheck size={40} className="text-blue-600" />} title="Warranty" desc="Trusted protection." />
@@ -160,7 +197,6 @@ export default function HomeContent() {
 }
 
 // --- SUB COMPONENTS ---
-
 function CategoryCard({ icon, title }) {
   return (
     <motion.div 
@@ -175,33 +211,22 @@ function CategoryCard({ icon, title }) {
   );
 }
 
-// Mimics your ProductCard.jsx style exactly
-function HomeProductCard({ id, title, category, price, image }) {
-  const navigate = useNavigate();
+function ReviewCard({ name, review, rating }) {
   return (
-    <motion.div 
-        onClick={() => navigate(`/overview/${id}`)}
-        whileHover={{ scale: 1.05 }}
-        className="bg-white rounded-xl shadow-2xl overflow-hidden cursor-pointer transform transition-transform duration-200"
+    <motion.div
+      whileHover={{ scale: 1.03 }}
+      className="bg-blue-50 p-6 rounded-2xl shadow-md flex flex-col gap-4"
     >
-      <div className="w-full h-[200px] bg-gray-100 flex items-center justify-center relative">
-         <img src={image} alt={title} className="max-h-full object-contain" />
+      <div className="flex items-center gap-2">
+        {[...Array(rating)].map((_, i) => (
+          <span key={i} className="text-yellow-400">★</span>
+        ))}
+        {[...Array(5 - rating)].map((_, i) => (
+          <span key={i} className="text-gray-300">★</span>
+        ))}
       </div>
-      <div className="p-4 flex flex-col gap-3">
-        <div className="flex items-center justify-between">
-           <h3 className="text-gray-900 font-semibold text-lg truncate">{title}</h3>
-           <span className="text-sm text-gray-500">{category}</span>
-        </div>
-        <div className="flex items-center gap-3">
-           <span className="text-xl font-bold text-green-600">${price.toFixed(2)}</span>
-        </div>
-        {/* Only "View Product" button, no Add to Cart */}
-        <div className="pt-2">
-            <button className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white py-2 rounded-md text-sm font-medium shadow-md transition-colors duration-200">
-                View Details
-            </button>
-        </div>
-      </div>
+      <p className="text-slate-800 italic">&quot;{review}&quot;</p>
+      <h4 className="font-bold text-slate-900">{name}</h4>
     </motion.div>
   );
 }
