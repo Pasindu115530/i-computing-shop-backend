@@ -9,6 +9,7 @@ import HomeContent from "./homecontext";
 import Contact from "./contact";
 import About from "./about";
 import Footer from "../components/footer";
+import ReviewAddPage from "./reviewAddPage";
 
 export default function homepage(){
     return(
@@ -25,6 +26,7 @@ export default function homepage(){
                     <Route path="/*" element={<h1>Page Not Found</h1>}/>
                     <Route path="/checkout" element={<Checkout />} />
                     <Route path="/orders" element={<OrderPage />} />
+                    <Route path="/reviews/add-page" element={<ReviewAddPage />} />
                 </Routes>
             </div>
             <Footer/>

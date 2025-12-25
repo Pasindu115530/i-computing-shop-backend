@@ -1,5 +1,7 @@
-import React, { useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 import { Monitor, Laptop, Cpu, Headphones, ArrowRight, ShieldCheck, Truck, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -8,17 +10,10 @@ import { motion } from 'framer-motion';
 
 export default function HomeContent() {
   const navigate = useNavigate();
-  // const { currentUser } = useContext(AuthContext); // your logged-in user
-  const currentUser = { name: 'Pasindu Udana' }; // Mock logged-in user for demo
+  const token = localStorage.getItem('token');
+  const isLoggedIn = !!token;
 
-  const [reviews, setReviews] = useState([
-    { id: 1, name: "John Doe", review: "Amazing products! The MacBook Pro M2 I bought is perfect.", rating: 5 },
-    { id: 2, name: "Sarah Lee", review: "Fast delivery and excellent customer service.", rating: 4 },
-    { id: 3, name: "Ali Khan", review: "Great selection of accessories and audio gear.", rating: 5 },
-  ]);
-
-  const [newReview, setNewReview] = useState('');
-  const [newRating, setNewRating] = useState(5);
+  const [reviews, setReviews] = useState([]);
 
   // Animation Variants
   const fadeInUp = {
@@ -34,18 +29,17 @@ export default function HomeContent() {
     }
   };
 
-  const handleSubmitReview = () => {
-    if (!newReview) return;
-    const reviewObj = {
-      id: Date.now(),
-      name: currentUser.name,
-      review: newReview,
-      rating: newRating
-    };
-    setReviews([reviewObj, ...reviews]);
-    setNewReview('');
-    setNewRating(5);
-  };
+  useEffect(() => {
+    axios
+      .get(import.meta.env.VITE_BACKEND_URL + '/reviews/')
+      .then((res) => {
+        setReviews(res.data || []);
+      })
+      .catch((err) => {
+        console.error('Failed to load reviews', err);
+        toast.error('Failed to load reviews');
+      });
+  }, []);
 
   return (
     <div className="w-full flex flex-col bg-slate-50 overflow-x-hidden pt-[20px]">
@@ -145,37 +139,19 @@ export default function HomeContent() {
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-10"
           >
             {reviews.map((r) => (
-              <ReviewCard key={r.id} {...r} />
+              <ReviewCard key={r.reviewID} name={r.name} comment={r.comment} rating={r.rating} />
             ))}
           </motion.div>
 
-          {/* SUBMIT REVIEW - Only for logged-in users */}
-          {currentUser ? (
-            <div className="max-w-3xl mx-auto bg-blue-50 p-6 rounded-2xl shadow-md">
-              <h3 className="font-bold text-xl text-slate-800 mb-4">Leave a Review</h3>
-              <textarea
-                value={newReview}
-                onChange={(e) => setNewReview(e.target.value)}
-                placeholder="Write your review here..."
-                className="w-full p-4 rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-400 mb-4"
-              />
-              <div className="flex items-center gap-4 mb-4">
-                <label className="font-medium text-slate-700">Rating:</label>
-                <select
-                  value={newRating}
-                  onChange={(e) => setNewRating(Number(e.target.value))}
-                  className="border border-slate-300 rounded-lg p-2"
-                >
-                  {[5, 4, 3, 2, 1].map((n) => (
-                    <option key={n} value={n}>{n} Stars</option>
-                  ))}
-                </select>
-              </div>
+          {/* SUBMIT REVIEW LINK - Only for logged-in users */}
+          {isLoggedIn ? (
+            <div className="max-w-3xl mx-auto bg-blue-50 p-6 rounded-2xl shadow-md text-center">
+              <h3 className="font-bold text-xl text-slate-800 mb-4">Want to share your experience?</h3>
               <button
-                onClick={handleSubmitReview}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition-colors"
+                onClick={() => navigate('/reviews/add-page')}
+                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors"
               >
-                Submit Review
+                Write a Review
               </button>
             </div>
           ) : (
@@ -211,7 +187,7 @@ function CategoryCard({ icon, title }) {
   );
 }
 
-function ReviewCard({ name, review, rating }) {
+function ReviewCard({ name, comment, rating }) {
   return (
     <motion.div
       whileHover={{ scale: 1.03 }}
@@ -225,7 +201,7 @@ function ReviewCard({ name, review, rating }) {
           <span key={i} className="text-gray-300">★</span>
         ))}
       </div>
-      <p className="text-slate-800 italic">&quot;{review}&quot;</p>
+      <p className="text-slate-800 italic">&quot;{comment}&quot;</p>
       <h4 className="font-bold text-slate-900">{name}</h4>
     </motion.div>
   );

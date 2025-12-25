@@ -44,8 +44,6 @@ export async function createReview(req, res) {
 
         await newReview.save();
 
-        toast.success ("Review submitted successfully and is pending approval.");
-
         return res.status(201).json({
             message: "Review submitted successfully",
             reviewID
