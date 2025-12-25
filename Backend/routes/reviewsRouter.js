@@ -1,10 +1,10 @@
-import { getRounds } from "bcrypt";
 import express from "express";
+import { createReview, getReviews } from "../controllers/reviewsController.js";
+import { requireAuth } from "../middleware/auth.js";
 
 const reviewRouter = express.Router();
 
-reviewRouter.post("/", createView);
-reviewRouter.get("/reviews", getReviews);
-
+reviewRouter.post("/", requireAuth, createReview);
+reviewRouter.get("/", getReviews);
 
 export default reviewRouter;

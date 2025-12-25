@@ -1,3 +1,68 @@
-export function createReview(){
-    
+import Review from "../models/Review.js";
+
+export async function createReview(req, res) {
+    if (!req.user) {
+        return res.status(401).json({ message: "Authentication required" });
+    }
+
+    const { rating, title, comment, name } = req.body;
+
+    if (rating == null || Number.isNaN(Number(rating))) {
+        return res.status(400).json({ message: "rating is required" });
+    }
+
+    const numericRating = Number(rating);
+    if (numericRating < 1 || numericRating > 5) {
+        return res.status(400).json({ message: "rating must be between 1 and 5" });
+    }
+
+    if (!comment) {
+        return res.status(400).json({ message: "comment is required" });
+    }
+
+    try {
+     
+        const latestReview = await Review.findOne().sort({ date: -1 });
+
+        let reviewID = "REV000001";
+        if (latestReview && latestReview.reviewID) {
+            const latestNumber = parseInt(latestReview.reviewID.replace("REV", "")) || 0;
+            const nextNumber = latestNumber + 1;
+            reviewID = "REV" + nextNumber.toString().padStart(6, "0");
+        }
+
+        const reviewerName = (name ?? `${req.user.firstName ?? ""} ${req.user.lastName ?? ""}`).trim() || "Anonymous";
+
+        const newReview = new Review({
+            reviewID,
+            name: reviewerName,
+            rating: numericRating,
+            title: title ?? "",
+            comment,
+            isApproved: false
+        });
+
+        await newReview.save();
+
+        toast.success ("Review submitted successfully and is pending approval.");
+
+        return res.status(201).json({
+            message: "Review submitted successfully",
+            reviewID
+          
+        });
+    } catch (err) {
+        return res.status(500).json({ message: "Server error", error: err.message });
+    }
+}
+
+export async function getReviews(req, res) {
+    try {
+        const isAdmin = req.user?.role === "admin";
+        const filter = isAdmin ? {} : { isApproved: true };
+        const reviews = await Review.find(filter).sort({ date: -1 });
+        return res.json(reviews);
+    } catch (err) {
+        return res.status(500).json({ message: "Server error", error: err.message });
+    }
 }

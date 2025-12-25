@@ -1,14 +1,12 @@
 import mongoose from "mongoose";
 
 const reviewSchema = new mongoose.Schema({
-    productID: {
+   
+    reviewID : {
         type: String,
-        required: true
-    },
-    email: {
-        type: String,
-        required: true
-    },
+        required: true,
+        unique: true
+    },  
     name: {
         type: String,
         required: true
@@ -34,7 +32,7 @@ const reviewSchema = new mongoose.Schema({
     },
     isApproved: {
         type: Boolean,
-        default: true
+        default: false
     }
 });
 
