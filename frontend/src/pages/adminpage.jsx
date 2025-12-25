@@ -11,6 +11,7 @@ import AdminAddProductPage from "./admin/adminAddProductPage";
 import AdminUpdateProductPage from "./admin/adminUpdateProductPage";
 import AdminOrderPage from "./admin/adminOrdersPage";
 import AdminUserPage from "./admin/adminUserPage";
+import AdminReviewPage from "./admin/adminReviewPage";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Loader from "../components/loader";
@@ -158,7 +159,7 @@ export default function AdminPage() {
               <Route path="/add-items" element={<AdminAddProductPage />} />
               <Route path="/update-item" element={<AdminUpdateProductPage />} />
               <Route path="/users" element={<AdminUserPage />} />
-              <Route path="/reviews" element={<h1 className="text-3xl font-bold text-gray-700">Reviews</h1>} />
+              <Route path="/reviews" element={<AdminReviewPage />} />
             </Routes>
           </div>
         </>

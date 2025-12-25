@@ -66,3 +66,50 @@ export async function getReviews(req, res) {
         return res.status(500).json({ message: "Server error", error: err.message });
     }
 }
+
+export async function approveReview(req, res) {
+    if (!req.user || req.user.role !== "admin") {
+        return res.status(403).json({ message: "Admin access only" });
+    }
+
+    const { reviewID } = req.params;
+    if (!reviewID) {
+        return res.status(400).json({ message: "reviewID is required" });
+    }
+
+    try {
+        const result = await Review.updateOne(
+            { reviewID },
+            { $set: { isApproved: true } }
+        );
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({ message: "Review not found" });
+        }
+
+        return res.json({ message: "Review approved" });
+    } catch (err) {
+        return res.status(500).json({ message: "Server error", error: err.message });
+    }
+}
+
+export async function deleteReview(req, res) {
+    if (!req.user || req.user.role !== "admin") {
+        return res.status(403).json({ message: "Admin access only" });
+    }
+
+    const { reviewID } = req.params;
+    if (!reviewID) {
+        return res.status(400).json({ message: "reviewID is required" });
+    }
+
+    try {
+        const result = await Review.deleteOne({ reviewID });
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ message: "Review not found" });
+        }
+        return res.json({ message: "Review deleted" });
+    } catch (err) {
+        return res.status(500).json({ message: "Server error", error: err.message });
+    }
+}
