@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import Loader from "../components/loader";
 import { FaGoogle } from "react-icons/fa";
 import { useGoogleLogin } from "@react-oauth/google";
+import { motion } from "framer-motion";
 
 
 export default function LoginPage(){
@@ -121,29 +122,111 @@ export default function LoginPage(){
 
             </div>
             <div className="w-[50%] h-full flex justify-center items-center ">
-                <div className="w-[450px] h-[600px] backdrop-blur-lg shadow-2xl rounded-2xl flex flex-col justify-center items-center">
-                    <h1 className="text-[40px] font-bold mb-[20px] text-accent text-shadow-white">Login</h1>
-                    <input onChange={
-                            (e) => {
-                                setEmail(e.target.value)
-                            }
-                        } type="email" placeholder="Your Email" className="w-[400px] h-[50px] mb-[25px] rounded-lg border border-accent p-[10px] text-[20px] focus:outline-none focus:ring-2 focus:ring-golden " />
-                    <input onChange={
-                            (e) => {
-                                setPassword(e.target.value)
-                            }
-                        } type="password" placeholder="Your Password" className="w-[400px] h-[50px] mb-[20px] rounded-lg border border-accent p-[10px] text-[20px] focus:outline-none focus:ring-2 focus:ring-golden " />
-                    <button onClick={login} className="w-[400px] h-[50px] bg-accent text-white font-bold text-[20px] rounded-lg hover:bg-transparent hover:text-accent ">Login</button>
-                    <button onClick={googleLogin} className="w-[400px] mt-[30px] h-[50px] bg-accent text-white font-bold text-[20px] rounded-lg hover:bg-transparent hover:text-accent ">Login With <FaGoogle className="inline ml-2 mb-1 " /></button>
-                    <div className="mt-[20px] text-white">
+                <motion.div
+                  initial={{ x: 300, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ duration: 0.6, ease: "easeOut" }}
+                  className="w-[450px] h-[600px] backdrop-blur-lg shadow-2xl rounded-2xl flex flex-col justify-center items-center"
+                >
+                    <motion.h1
+                      initial={{ y: -20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.1, duration: 0.5 }}
+                      className="text-[40px] font-bold mb-[20px] text-accent text-shadow-white"
+                    >
+                      Login
+                    </motion.h1>
+                    <motion.input
+                      initial={{ x: 100, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: 0.2, duration: 0.5 }}
+                      onChange={(e) => setEmail(e.target.value)}
+                      type="email"
+                      placeholder="Your Email"
+                      className="w-[400px] h-[50px] mb-[25px] rounded-lg border border-accent p-[10px] text-[20px] focus:outline-none focus:ring-2 focus:ring-golden "
+                    />
+                    <motion.input
+                      initial={{ x: 100, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: 0.3, duration: 0.5 }}
+                      onChange={(e) => setPassword(e.target.value)}
+                      type="password"
+                      placeholder="Your Password"
+                      className="w-[400px] h-[50px] mb-[20px] rounded-lg border border-accent p-[10px] text-[20px] focus:outline-none focus:ring-2 focus:ring-golden "
+                    />
+                    <motion.button
+                      onClick={login}
+                      disabled={isLoading}
+                      initial={{ x: 100, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: 0.4, duration: 0.5 }}
+                      whileHover={{ scale: isLoading ? 1 : 1.02 }}
+                      whileTap={{ scale: isLoading ? 1 : 0.98 }}
+                      className={`w-[400px] h-[50px] font-bold text-[20px] rounded-lg transition ${
+                        isLoading
+                          ? "bg-gray-500 text-white cursor-not-allowed"
+                          : "bg-accent text-white hover:bg-transparent hover:text-accent"
+                      }`}
+                    >
+                      {isLoading ? (
+                        <motion.span
+                          animate={{ rotate: 360 }}
+                          transition={{ repeat: Infinity, duration: 1 }}
+                          className="inline-block"
+                        >
+                          ⟳
+                        </motion.span>
+                      ) : (
+                        "Login"
+                      )}
+                    </motion.button>
+                    <motion.button
+                      onClick={googleLogin}
+                      disabled={isLoading}
+                      initial={{ x: 100, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: 0.5, duration: 0.5 }}
+                      whileHover={{ scale: isLoading ? 1 : 1.02 }}
+                      whileTap={{ scale: isLoading ? 1 : 0.98 }}
+                      className={`w-[400px] mt-[30px] h-[50px] font-bold text-[20px] rounded-lg transition ${
+                        isLoading
+                          ? "bg-gray-500 text-white cursor-not-allowed"
+                          : "bg-red-600 text-white hover:bg-transparent hover:text-accent"
+                      }`}
+                    >
+                      {isLoading ? (
+                        <motion.span
+                          animate={{ rotate: 360 }}
+                          transition={{ repeat: Infinity, duration: 1 }}
+                          className="inline-block"
+                        >
+                          ⟳
+                        </motion.span>
+                      ) : (
+                        <>
+                          Login With <FaGoogle className="inline ml-2 mb-1 " />
+                        </>
+                      )}
+                    </motion.button>
+                    <motion.div
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.6, duration: 0.5 }}
+                      className="mt-[20px] text-white"
+                    >
                         <span>Don't have an account? </span>
                         <Link to="/register" className="text-golden font-bold hover:underline">Register</Link>
-                    </div>
-                    <div className="mt-[10px] text-white">
+                    </motion.div>
+                    <motion.div
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.7, duration: 0.5 }}
+                      className="mt-[10px] text-white"
+                    >
                         <Link to="/forgot-password" className="text-golden font-bold hover:underline">Forgot Password?</Link>
-                    </div>    
+                    </motion.div>    
 
-                </div>
+                </motion.div>
 
             </div>
             {isLoading && <Loader />}

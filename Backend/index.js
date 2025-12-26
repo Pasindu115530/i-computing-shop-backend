@@ -8,6 +8,7 @@ import dotenv from "dotenv"
 import errorHandler from "./middleware/errorHandler.js"
 import orderRouter from "./routes/orderRouter.js"
 import reviewRouter from "./routes/reviewsRouter.js"
+import chatRouter from "./routes/chatRouter.js"
 
 dotenv.config()
 
@@ -56,6 +57,7 @@ app.use("/api/users", userRouter)
 app.use("/api/products", productRouter)
 app.use("/api/orders", orderRouter)
 app.use("/api/reviews", reviewRouter)
+app.use("/api/chat", chatRouter)
 
 
 // Centralized error handler

@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
 import Loader from "../components/loader";
+import { motion } from "framer-motion";
 
 
 export default function RegisterPage(){
@@ -76,40 +77,102 @@ export default function RegisterPage(){
 
             </div>
             <div className="w-[50%] h-full flex justify-center items-center ">
-                <div className="w-[450px] h-[600px] backdrop-blur-lg shadow-2xl rounded-2xl flex flex-col justify-center items-center">
-                    <h1 className="text-[40px] font-bold mb-[20px] text-accent text-shadow-white">Register</h1>
-                    <input onChange={
-                            (e) => {
-                                setFirstName(e.target.value)
-                            }
-                        } type="text" placeholder="Your First Name" className="w-[400px] h-[50px] mb-[25px] rounded-lg border border-accent p-[10px] text-[20px] focus:outline-none focus:ring-2 focus:ring-golden " />
-                    <input onChange={
-                            (e) => {
-                                setLastName(e.target.value)
-                            }
-                        } type="text" placeholder="Your Last Name" className="w-[400px] h-[50px] mb-[25px] rounded-lg border border-accent p-[10px] text-[20px] focus:outline-none focus:ring-2 focus:ring-golden " />
-                    <input onChange={
-                            (e) => {
-                                setEmail(e.target.value)
-                            }
-                        } type="email" placeholder="Your Email" className="w-[400px] h-[50px] mb-[25px] rounded-lg border border-accent p-[10px] text-[20px] focus:outline-none focus:ring-2 focus:ring-golden " />    
-                    <input onChange={
-                            (e) => {
-                                setPassword(e.target.value)
-                            }
-                        } type="password" placeholder="Your Password" className="w-[400px] h-[50px] mb-[20px] rounded-lg border border-accent p-[10px] text-[20px] focus:outline-none focus:ring-2 focus:ring-golden " />
-                    <input onChange={
-                            (e) => {
-                                setConfirmPassword(e.target.value)
-                            }
-                        } type="password" placeholder="Confirm Your Password" className="w-[400px] h-[50px] mb-[20px] rounded-lg border border-accent p-[10px] text-[20px] focus:outline-none focus:ring-2 focus:ring-golden " />    
-                    <button onClick={register} className="w-[400px] h-[50px] bg-accent text-white font-bold text-[20px] rounded-lg hover:bg-transparent hover:text-accent ">Register</button>
-                    <div className="mt-[20px] text-white">
+                <motion.div
+                  initial={{ x: 300, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  transition={{ duration: 0.6, ease: "easeOut" }}
+                  className="w-[450px] h-[600px] backdrop-blur-lg shadow-2xl rounded-2xl flex flex-col justify-center items-center"
+                >
+                    <motion.h1
+                      initial={{ y: -20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.1, duration: 0.5 }}
+                      className="text-[40px] font-bold mb-[20px] text-accent text-shadow-white"
+                    >
+                      Register
+                    </motion.h1>
+                    <motion.input
+                      initial={{ x: 100, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: 0.2, duration: 0.5 }}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      type="text"
+                      placeholder="Your First Name"
+                      className="w-[400px] h-[50px] mb-[25px] rounded-lg border border-accent p-[10px] text-[20px] focus:outline-none focus:ring-2 focus:ring-golden "
+                    />
+                    <motion.input
+                      initial={{ x: 100, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: 0.3, duration: 0.5 }}
+                      onChange={(e) => setLastName(e.target.value)}
+                      type="text"
+                      placeholder="Your Last Name"
+                      className="w-[400px] h-[50px] mb-[25px] rounded-lg border border-accent p-[10px] text-[20px] focus:outline-none focus:ring-2 focus:ring-golden "
+                    />
+                    <motion.input
+                      initial={{ x: 100, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: 0.4, duration: 0.5 }}
+                      onChange={(e) => setEmail(e.target.value)}
+                      type="email"
+                      placeholder="Your Email"
+                      className="w-[400px] h-[50px] mb-[25px] rounded-lg border border-accent p-[10px] text-[20px] focus:outline-none focus:ring-2 focus:ring-golden "
+                    />    
+                    <motion.input
+                      initial={{ x: 100, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: 0.5, duration: 0.5 }}
+                      onChange={(e) => setPassword(e.target.value)}
+                      type="password"
+                      placeholder="Your Password"
+                      className="w-[400px] h-[50px] mb-[20px] rounded-lg border border-accent p-[10px] text-[20px] focus:outline-none focus:ring-2 focus:ring-golden "
+                    />
+                    <motion.input
+                      initial={{ x: 100, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: 0.6, duration: 0.5 }}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      type="password"
+                      placeholder="Confirm Your Password"
+                      className="w-[400px] h-[50px] mb-[20px] rounded-lg border border-accent p-[10px] text-[20px] focus:outline-none focus:ring-2 focus:ring-golden "
+                    />
+                    <motion.button
+                      onClick={register}
+                      disabled={isloading}
+                      initial={{ x: 100, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: 0.7, duration: 0.5 }}
+                      whileHover={{ scale: isloading ? 1 : 1.02 }}
+                      whileTap={{ scale: isloading ? 1 : 0.98 }}
+                      className={`w-[400px] h-[50px] font-bold text-[20px] rounded-lg transition ${
+                        isloading
+                          ? "bg-gray-500 text-white cursor-not-allowed"
+                          : "bg-accent text-white hover:bg-transparent hover:text-accent"
+                      }`}
+                    >
+                      {isloading ? (
+                        <motion.span
+                          animate={{ rotate: 360 }}
+                          transition={{ repeat: Infinity, duration: 1 }}
+                          className="inline-block"
+                        >
+                          ⟳
+                        </motion.span>
+                      ) : (
+                        "Register"
+                      )}
+                    </motion.button>
+                    <motion.div
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.8, duration: 0.5 }}
+                      className="mt-[20px] text-white"
+                    >
                         <span>Do you have an account? </span>
                         <Link to="/login" className="text-golden font-bold hover:underline">Login</Link>
-                    </div>
+                    </motion.div>
 
-                </div>
+                </motion.div>
 
             </div>
             {isloading && <Loader/>}

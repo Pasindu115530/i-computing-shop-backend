@@ -8,6 +8,7 @@ import { Toaster } from "react-hot-toast";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import ForgotPasswordpage from "./pages/forgotPasswordpage";
 import ReviewAddPage from "./pages/reviewAddPage.jsx";
+import ChatWidget from "./components/ChatWidget.jsx";
 
 function App() {
   return (
@@ -23,6 +24,8 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPasswordpage/>}/>
             <Route path="/reviews/add" element={<ReviewAddPage/>}/>
           </Routes>
+          {/* Floating chat widget shown on all pages */}
+          <ChatWidget />
         </div>
       </BrowserRouter>
     </GoogleOAuthProvider>
