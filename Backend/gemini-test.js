@@ -3,13 +3,12 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 async function test() {
-  try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const result = await model.generateContent("Hello!");
-    console.log(result.response.text());
-  } catch (err) {
-    console.error("❌ Gemini test failed:", err);
-  }
+  const model = genAI.getGenerativeModel({
+    model: "gemini-1.5-flash"
+  });
+
+  const result = await model.generateContent("Say hello in one sentence");
+  console.log(result.response.text());
 }
 
 test();

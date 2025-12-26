@@ -2,7 +2,7 @@ import Order from "../models/Order.js";
 import Product from "../models/Product.js";
 
 export async function createOrder(req, res) {
-
+    console.log("Create order request body:", req.body);
     if(req.user == null){
         return res.status(401).json({ message: "Authentication required" });
 
@@ -75,7 +75,9 @@ export async function createOrder(req, res) {
 
                 
     }catch(err){ 
-        return res.status(500).json({ message: "Server error", error: err.message });   
+        console.error("Create order error:", err);
+        return res.status(500).json({
+        message: "Internal server error"});
     }
     
 

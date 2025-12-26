@@ -25,7 +25,7 @@ export default function Checkout() {
 
     async function submitOrder() {
         const token = localStorage.getItem("token");
-
+        console.log("Submitting order with token:", token);
         if (!token) {
             toast.error("You must be logged in!");
             navigate("/login");
