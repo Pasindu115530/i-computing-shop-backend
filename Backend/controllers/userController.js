@@ -170,6 +170,8 @@ export async function googleLogin(req, res) {
                 lastName: lastName,
                 password: "123",   // You can hash this later
                 image: image,
+                isEmailVerified: true,
+                isBlocked: false,
             });
 
             await user.save();
@@ -183,7 +185,11 @@ export async function googleLogin(req, res) {
             role: user.role,
             isEmailVerified: true,
             image: user.image,
+            isBlocked: user.isBlocked
         };
+        if(user.isBlocked){
+            return  res.status(403).json({ message: "Your account has been blocked. Please contact support." });
+        }
 
         // Generate token
         const token = jwt.sign(payload, process.env.JWT_SECRET, {

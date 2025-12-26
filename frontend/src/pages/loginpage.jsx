@@ -24,7 +24,8 @@ export default function LoginPage(){
             //check block status
             if(res.data.isBlocked){
                 toast.error("Your account has been blocked. Please contact support.");  
-                return; // Prevent further execution if blocked
+                setIsLoading(false);
+                return; 
             }
             // SAVE TOKEN AND USER
             localStorage.setItem("token", res.data.token);
