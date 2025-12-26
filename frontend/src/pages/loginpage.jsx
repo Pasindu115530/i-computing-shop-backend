@@ -21,7 +21,11 @@ export default function LoginPage(){
         .then((res) => {
             console.log("Google login response:", res.data);
             toast.success(res.data.message);
-
+            //check block status
+            if(res.data.isBlocked){
+                toast.error("Your account has been blocked. Please contact support.");  
+                return; // Prevent further execution if blocked
+            }
             // SAVE TOKEN AND USER
             localStorage.setItem("token", res.data.token);
             
