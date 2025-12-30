@@ -13,6 +13,7 @@ import reviewRouter from "./routes/reviewsRouter.js"
 
 
 const mongoURI = process.env.MONGO_URL
+const PORT = process.env.PORT || 4900;
 
 mongoose.connect(mongoURI).then(
     () => {
@@ -64,8 +65,6 @@ app.use("/api/reviews", reviewRouter)
 app.use(errorHandler)
 
 
-app.listen(4900,
-    () => {
-        console.log("server is running")
-    }
-)
+app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Server is running on port ${PORT}`);
+});
