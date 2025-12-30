@@ -93,32 +93,10 @@ export default function HomeContent() {
         </div>
       </div>
 
-      {/* CATEGORIES */}
-      <div className="max-w-7xl mx-auto py-10 px-6 w-full">
-        <motion.h2 
-          variants={fadeInUp}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          className="text-3xl font-bold text-slate-800 mb-10 text-center"
-        >
-          Browse by Category
-        </motion.h2>
-        <motion.div 
-          variants={staggerContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-6"
-        >
-          <CategoryCard icon={<Laptop size={32} />} title="Laptops" />
-          <CategoryCard icon={<Monitor size={32} />} title="Desktops" />
-          <CategoryCard icon={<Cpu size={32} />} title="Parts" />
-          <CategoryCard icon={<Headphones size={32} />} title="Audio" />
-        </motion.div>
-      </div>
 
-      {/* REVIEWS */}
+      
+
+      
       <div className="bg-white py-20 px-6">
         <div className="max-w-7xl mx-auto">
           <motion.h2
